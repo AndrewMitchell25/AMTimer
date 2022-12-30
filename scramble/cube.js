@@ -105,6 +105,16 @@ class Cube {
     this.eo = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
   }
 
+  toJSON() {
+    return {
+      center: this.center,
+      cp: this.cp,
+      co: this.co,
+      ep: this.ep,
+      eo: this.eo,
+    };
+  }
+
   toString() {
     let str = [];
     for (let i = 0; i < 6; i++) {
@@ -169,6 +179,26 @@ class Cube {
     console.log(res);
   }
 
+  isSolved() {
+    const cube = new Cube();
+    for (let i = 0; i < 6; i++) {
+      if (this.center[i] != cube.center[i]) {
+        return false;
+      }
+    }
+    for (let i = 0; i < 8; i++) {
+      if (this.cp[i] != cube.cp[i] || this.co[i] != cube.co[i]) {
+        return false;
+      }
+    }
+    for (let i = 0; i < 8; i++) {
+      if (this.ep[i] != cube.ep[i] || this.eo[i] != cube.eo[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   multiplyCenters(other) {
     for (let i = 0; i < 6; i++) {
       let n = other.center[i];
@@ -179,7 +209,7 @@ class Cube {
   }
 
   multiplyCorners(other) {
-    for (let i = 0; i < 9; i++) {
+    for (let i = 0; i < 8; i++) {
       let n = other.cp[i];
       this.newCp[i] = this.cp[n];
       this.newCo[i] = (this.co[n] + other.co[i]) % 3;
@@ -261,7 +291,7 @@ class Cube {
     {
       center: [0, 1, 2, 3, 4, 5],
       cp: [DFR, UFL, ULB, URF, DRB, DLF, DBL, UBR],
-      co: [2, 0, 0, 1, 1, 0, 0, 2],
+      co: [1, 0, 0, 2, 2, 0, 0, 1],
       ep: [FR, UF, UL, UB, BR, DF, DL, DB, DR, FL, BL, UR],
       eo: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     },
@@ -269,7 +299,7 @@ class Cube {
     {
       center: [0, 1, 2, 3, 4, 5],
       cp: [UFL, DLF, ULB, UBR, URF, DFR, DBL, DRB],
-      co: [1, 2, 0, 0, 2, 1, 0, 0],
+      co: [2, 1, 0, 0, 1, 2, 0, 0],
       ep: [UR, FL, UL, UB, DR, FR, DL, DB, UF, DF, BL, BR],
       eo: [0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0],
     },
@@ -285,7 +315,7 @@ class Cube {
     {
       center: [0, 1, 2, 3, 4, 5],
       cp: [URF, ULB, DBL, UBR, DFR, UFL, DLF, DRB],
-      co: [0, 1, 2, 0, 0, 2, 1, 0],
+      co: [0, 2, 1, 0, 0, 1, 2, 0],
       ep: [UR, UF, BL, UB, DR, DF, FL, DB, FR, UL, DL, BR],
       eo: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     },
@@ -293,7 +323,7 @@ class Cube {
     {
       center: [0, 1, 2, 3, 4, 5],
       cp: [URF, UFL, UBR, DRB, DFR, DLF, ULB, DBL],
-      co: [0, 0, 1, 2, 0, 0, 2, 1],
+      co: [0, 0, 2, 1, 0, 0, 1, 2],
       ep: [UR, UF, UL, BR, DR, DF, DL, BL, FR, FL, UB, DB],
       eo: [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1],
     },
