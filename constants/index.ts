@@ -1,4 +1,4 @@
-export let timerDelay = 1000;
+export let timerDelay = 500;
 
 export const formatTime = (time: number) => {
   let minute = "";
