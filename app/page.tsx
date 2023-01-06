@@ -1,12 +1,12 @@
-import Timer from "./Timer"
-import Cube from "./CubeState"
+import Timer from "./Timer";
+import Cube from "./CubeState";
 
 function Homepage() {
   return (
-    <div>
-        <Timer />
+    <div className="flex justify-center align-middle">
+      <Timer />
     </div>
-  )
+  );
 }
 
-export default Homepage
+export default Homepage;

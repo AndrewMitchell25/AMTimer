@@ -2,7 +2,7 @@
 import { run } from "node:test";
 import { useEffect, useRef, useState } from "react";
 import Time from "./Time";
-import constants from "../constants";
+import { timerDelay, formatTime } from "../constants";
 
 function Timer() {
   const [time, setTime] = useState(0);
@@ -52,11 +52,13 @@ function Timer() {
     setKeyPressed(e);
     setReleaseTimer(false);
 
-    if (e.key !== " " || e.repeat) {
-      if (timeStyle === "") {
-        setTimeStyle("text-green-500");
-        setTime(0);
-      }
+    if (e.key !== " ") {
+      return;
+    }
+
+    if (e.repeat && timeStyle === "") {
+      setTimeStyle("text-green-500");
+      setTime(0);
       return;
     }
 
@@ -72,7 +74,7 @@ function Timer() {
     const pressed = timestamp.current;
     const released = Date.now();
 
-    if (released - pressed < 1000) {
+    if (released - pressed < timerDelay) {
       return;
     }
     setKeyPressed(e);
@@ -81,9 +83,7 @@ function Timer() {
 
   return (
     <div>
-      <Time time={time} style={timeStyle} />
-      <button onClick={() => setIsRunning(true)}>Start</button>
-      <button onClick={() => setIsRunning(false)}>Stop</button>
+      <Time time={formatTime(time)} style={timeStyle} />
     </div>
   );
 }
