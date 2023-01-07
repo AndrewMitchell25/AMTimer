@@ -1,3 +1,5 @@
+"use client";
+
 import {
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
@@ -5,40 +7,53 @@ import {
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signInWithRedirect,
+  updateEmail,
+  updatePassword,
+  User,
 } from "firebase/auth";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { auth } from "../Firebase/firebase";
+import firebase from "firebase/compat/app";
 
-interface AppContextInterface {
-  name: string;
-  author: string;
-  url: string;
+interface Props {
+  children: React.ReactNode;
 }
 
-const AuthContext = createContext<AppContextInterface | null>(null);
+interface ContextProps {
+  currentUser: User | null;
+  signIn: Function;
+  signUp: Function;
+  signInWithGoogle: Function;
+  signOut: Function;
+  resetPassword: Function;
+  updateUserEmail: Function;
+  updateUserPassword: Function;
+}
+
+const AuthContext = createContext<ContextProps | null>(null);
 
 export function useAuth() {
   return useContext(AuthContext);
 }
 
-export function AuthProvider({ children }) {
-  const [currentUser, setCurrentUser] = useState();
+export function AuthProvider({ children }: Props) {
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  function signup(email: string, password: string) {
+  function signUp(email: string, password: string) {
     return createUserWithEmailAndPassword(auth, email, password);
   }
 
-  function signinWithGoogle() {
+  function signInWithGoogle() {
     const provider = new GoogleAuthProvider();
     return signInWithRedirect(auth, provider);
   }
 
-  function login(email: string, password: string) {
+  function signIn(email: string, password: string) {
     return signInWithEmailAndPassword(auth, email, password);
   }
 
-  function logout() {
+  function signOut() {
     return auth.signOut();
   }
 
@@ -46,27 +61,37 @@ export function AuthProvider({ children }) {
     return sendPasswordResetEmail(auth, email);
   }
 
-  function updateEmail(email: string) {
-    return currentUser.updateEmail(email);
+  function updateUserEmail(email: string) {
+    if (currentUser) {
+      return updateEmail(currentUser, email);
+    }
   }
 
-  function updatePassword(password: string) {
-    return currentUser.updatePassword(password);
+  function updateUserPassword(password: string) {
+    if (currentUser) {
+      return updatePassword(currentUser, password);
+    }
   }
 
-  onAuthStateChanged(auth, (user) => {
-    setCurrentUser(user);
-    setLoading(false);
-  });
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+
+      if (loading) {
+        setLoading(false);
+      }
+    });
+  }, []);
 
   const value = {
     currentUser,
-    login,
-    signup,
-    logout,
+    signIn,
+    signUp,
+    signInWithGoogle,
+    signOut,
     resetPassword,
-    updateEmail,
-    updatePassword,
+    updateUserEmail,
+    updateUserPassword,
   };
 
   return (
