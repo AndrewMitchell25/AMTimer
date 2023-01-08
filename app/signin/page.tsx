@@ -6,7 +6,7 @@ import { useAuth } from "../../Contexts/AuthContext";
 import Link from "next/link";
 
 function SignInPage() {
-  const [formData, setFormData] = useState(["", ""]);
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const { signIn, signInWithGoogle, currentUser } =
     useAuth() as AuthContextType;
   const [error, setError] = useState("");
@@ -19,7 +19,7 @@ function SignInPage() {
     try {
       setError("");
       setLoading(true);
-      await signIn(formData[0], formData[1]);
+      await signIn(formData.email, formData.password);
       router.push("/");
     } catch {
       setError("Failed to sign in");
@@ -35,16 +35,20 @@ function SignInPage() {
         <label htmlFor="email">Email</label>
         <input
           type="email"
-          value={formData[0]}
-          onChange={(e) => setFormData([e.target.value, formData[1]])}
+          value={formData.email}
+          onChange={(e) =>
+            setFormData({ email: e.target.value, password: formData.password })
+          }
           required
           placeholder="Email"
         />
         <label htmlFor="password">Password</label>
         <input
           type="password"
-          value={formData[1]}
-          onChange={(e) => setFormData([formData[0], e.target.value])}
+          value={formData.password}
+          onChange={(e) =>
+            setFormData({ email: formData.email, password: e.target.value })
+          }
           required
           placeholder="Password"
         />
