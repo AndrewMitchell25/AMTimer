@@ -1,4 +1,4 @@
-import { AuthProvider } from "../Contexts/AuthContext";
+import AuthProvider from "../Contexts/AuthContext";
 import "../styles/globals.css";
 import Navbar from "./Navbar";
 
@@ -13,8 +13,8 @@ export default function RootLayout({
       <body className="bg-gray-100">
         <AuthProvider>
           <Navbar />
+          {children}
         </AuthProvider>
-        {children}
       </body>
     </html>
   );

@@ -18,24 +18,9 @@ interface Props {
   children: React.ReactNode;
 }
 
-interface ContextProps {
-  currentUser: User | null;
-  signIn: Function;
-  signUp: Function;
-  signInWithGoogle: Function;
-  signOut: Function;
-  resetPassword: Function;
-  updateUserEmail: Function;
-  updateUserPassword: Function;
-}
+const AuthContext = createContext<AuthContextType | null>(null);
 
-const AuthContext = createContext<ContextProps | null>(null);
-
-export function useAuth() {
-  return useContext(AuthContext);
-}
-
-export function AuthProvider({ children }: Props) {
+const AuthProvider: React.FC<Props> = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -98,4 +83,10 @@ export function AuthProvider({ children }: Props) {
       {!loading && children}
     </AuthContext.Provider>
   );
+};
+
+export function useAuth() {
+  return useContext(AuthContext);
 }
+
+export default AuthProvider;
