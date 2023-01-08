@@ -13,7 +13,6 @@ import {
 } from "firebase/auth";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { auth } from "../Firebase/firebase";
-import firebase from "firebase/compat/app";
 
 interface Props {
   children: React.ReactNode;
