@@ -10,9 +10,11 @@ import {
   updateEmail,
   updatePassword,
   User,
+  updateProfile,
 } from "firebase/auth";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { auth } from "../Firebase/firebase";
+import { useRouter } from "next/router";
 
 interface Props {
   children: React.ReactNode;
@@ -24,8 +26,15 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  function signUp(email: string, password: string) {
-    return createUserWithEmailAndPassword(auth, email, password);
+  async function signUp(
+    email: string,
+    password: string,
+    newDisplayName: string
+  ) {
+    return (
+      (await createUserWithEmailAndPassword(auth, email, password)) &&
+      (await updateUserDisplayName(newDisplayName))
+    );
   }
 
   function signInWithGoogle() {
@@ -57,6 +66,12 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
     }
   }
 
+  function updateUserDisplayName(newDisplayName: string) {
+    if (currentUser) {
+      return updateProfile(currentUser, { displayName: newDisplayName });
+    }
+  }
+
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
@@ -76,6 +91,7 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
     resetPassword,
     updateUserEmail,
     updateUserPassword,
+    updateUserDisplayName,
   };
 
   return (

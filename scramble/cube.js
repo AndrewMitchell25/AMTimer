@@ -137,6 +137,28 @@ export default class Cube {
     return str;
   }
 
+  toString() {
+    let str = [];
+    for (let i = 0; i < 6; i++) {
+      str[centers[i]] = centerColors[this.center[i]];
+    }
+    for (let i = 0; i < 8; i++) {
+      let c = this.cp[i];
+      let o = this.co[i];
+      for (let j = 0; j < 3; j++) {
+        str[corners[i][j]] = cornerColors[c][(o + j) % 3];
+      }
+    }
+    for (let i = 0; i < 12; i++) {
+      let e = this.ep[i];
+      let o = this.eo[i];
+      for (let j = 0; j < 3; j++) {
+        str[edges[i][j]] = edgeColors[e][(o + j) % 2];
+      }
+    }
+    return str.join("");
+  }
+
   display() {
     let str = this.toString();
     let res = "          +---------+\n";

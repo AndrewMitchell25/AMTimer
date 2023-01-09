@@ -7,8 +7,7 @@ import Link from "next/link";
 
 function SignInPage() {
   const [formData, setFormData] = useState({ email: "", password: "" });
-  const { signIn, signInWithGoogle, currentUser } =
-    useAuth() as AuthContextType;
+  const { signIn, signInWithGoogle } = useAuth() as AuthContextType;
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -68,7 +67,6 @@ function SignInPage() {
         Need an account?
         <Link href="/signup">Sign up</Link>
       </div>
-      <div>{currentUser.displayName}</div>
     </div>
   );
 }

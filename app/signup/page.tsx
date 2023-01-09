@@ -10,8 +10,9 @@ function SignUpPage() {
     email: "",
     password: "",
     passwordConfirm: "",
+    displayName: "",
   });
-  const { signUp } = useAuth() as AuthContextType;
+  const { signUp, updateUserDisplayName } = useAuth() as AuthContextType;
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -26,7 +27,7 @@ function SignUpPage() {
     try {
       setError("");
       setLoading(true);
-      await signUp(formData.email, formData.password);
+      await signUp(formData.email, formData.password, formData.displayName);
       router.push("/");
     } catch {
       setError("Failed to create an account");
@@ -48,6 +49,7 @@ function SignUpPage() {
               email: e.target.value,
               password: formData.password,
               passwordConfirm: formData.passwordConfirm,
+              displayName: formData.displayName,
             })
           }
           required
@@ -62,6 +64,7 @@ function SignUpPage() {
               email: formData.email,
               password: e.target.value,
               passwordConfirm: formData.passwordConfirm,
+              displayName: formData.displayName,
             })
           }
           required
@@ -76,10 +79,26 @@ function SignUpPage() {
               email: formData.email,
               password: formData.password,
               passwordConfirm: e.target.value,
+              displayName: formData.displayName,
             })
           }
           required
           placeholder="Password Confirmation"
+        />
+        <label>User Name</label>
+        <input
+          type=""
+          value={formData.displayName}
+          onChange={(e) =>
+            setFormData({
+              email: formData.email,
+              password: formData.password,
+              passwordConfirm: formData.passwordConfirm,
+              displayName: e.target.value,
+            })
+          }
+          required
+          placeholder="User Name"
         />
         <button disabled={loading} type="submit">
           Sign Up

@@ -3,7 +3,7 @@ import Cube from "./CubeState";
 
 function Homepage() {
   return (
-    <div className="flex justify-center align-middle">
+    <div className="flex justify-center align-middle h-full w-full">
       <Timer />
     </div>
   );

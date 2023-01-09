@@ -1,3 +1,5 @@
+"use client";
+
 import { useAuth } from "../../Contexts/AuthContext";
 
 function ProfilePage() {
