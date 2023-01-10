@@ -3,7 +3,9 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useAuth } from "../../Contexts/AuthContext";
+import { AiFillGoogleCircle } from "react-icons/ai";
 import Link from "next/link";
+import { motion } from "framer-motion";
 
 function SignInPage() {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -27,10 +29,10 @@ function SignInPage() {
   }
 
   return (
-    <div>
-      <h2>Sign In</h2>
+    <div className="flex items-center flex-col">
+      <h2 className="mt-10 text-2xl font-semibold">Sign In</h2>
       {error && <p>{error}</p>}
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="flex flex-col mt-8">
         <label htmlFor="email">Email</label>
         <input
           type="email"
@@ -51,12 +53,26 @@ function SignInPage() {
           required
           placeholder="Password"
         />
-        <button disabled={loading} type="submit">
+        <motion.button
+          whileTap={{ scale: 0.9 }}
+          disabled={loading}
+          type="submit"
+        >
           Login
-        </button>
+        </motion.button>
       </form>
-      <div>
-        <button onClick={signInWithGoogle}>Sign in with Google</button>
+      <div className="flex flex-col items-center">
+        <p className="text-gray-500 text-sm">or you can sign in with</p>
+        <motion.button
+          onClick={() => {
+            signInWithGoogle;
+            router.push("/");
+          }}
+          whileTap={{ scale: 0.9 }}
+          className=""
+        >
+          <AiFillGoogleCircle className="hover:text-red-700 w-5 h-5" />
+        </motion.button>
       </div>
       {/*
       <div>
@@ -65,7 +81,10 @@ function SignInPage() {
        */}
       <div>
         Need an account?
-        <Link href="/signup">Sign up</Link>
+        <Link href="/signup" className="text-blue-400">
+          {" "}
+          Sign up
+        </Link>
       </div>
     </div>
   );

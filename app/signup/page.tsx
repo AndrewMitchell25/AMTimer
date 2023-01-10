@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../Contexts/AuthContext";
 import Link from "next/link";
+import { motion } from "framer-motion";
+import { AiFillGoogleCircle } from "react-icons/ai";
 
 function SignUpPage() {
   const [formData, setFormData] = useState({
@@ -12,7 +14,8 @@ function SignUpPage() {
     passwordConfirm: "",
     displayName: "",
   });
-  const { signUp, updateUserDisplayName } = useAuth() as AuthContextType;
+  const { signUp, updateUserDisplayName, signInWithGoogle } =
+    useAuth() as AuthContextType;
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -36,10 +39,10 @@ function SignUpPage() {
   }
 
   return (
-    <div>
-      <h2>Sign Up</h2>
+    <div className="flex items-center flex-col">
+      <h2 className="mt-10 text-2xl font-semibold">Sign Up</h2>
       {error && <p>{error}</p>}
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="flex flex-col mt-8">
         <label htmlFor="email">Email</label>
         <input
           type="email"
@@ -100,12 +103,30 @@ function SignUpPage() {
           required
           placeholder="User Name"
         />
-        <button disabled={loading} type="submit">
+        <motion.button
+          whileTap={{ scale: 0.9 }}
+          disabled={loading}
+          type="submit"
+        >
           Sign Up
-        </button>
+        </motion.button>
       </form>
+      <div className="flex flex-col items-center">
+        <p className="text-gray-500 text-sm">or you can sign up with</p>
+        <motion.button
+          onClick={signInWithGoogle}
+          whileTap={{ scale: 0.9 }}
+          className=""
+        >
+          <AiFillGoogleCircle className="hover:text-red-700 w-5 h-5" />
+        </motion.button>
+      </div>
       <div>
-        Already have an acoount? <Link href="/signin">Sign In</Link>
+        Already have an acoount?
+        <Link href="/signin" className="text-blue-400">
+          {" "}
+          Sign In
+        </Link>
       </div>
     </div>
   );
