@@ -12,9 +12,9 @@ import {
   User,
   updateProfile,
 } from "firebase/auth";
+import { addDoc, collection } from "firebase/firestore";
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { auth } from "../Firebase/firebase";
-import { useRouter } from "next/router";
+import { auth, db } from "../Firebase/firebase";
 
 interface Props {
   children: React.ReactNode;
@@ -31,15 +31,26 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
     password: string,
     newDisplayName: string
   ) {
-    return (
-      (await createUserWithEmailAndPassword(auth, email, password)) &&
-      (await updateUserDisplayName(newDisplayName))
-    );
+    await createUserWithEmailAndPassword(auth, email, password);
+    if (currentUser) {
+      try {
+        const date = Date.now;
+        const docRef = await addDoc(collection(db, "userData"), {
+          currentSession: date,
+          sessions: [date],
+        });
+        console.log(docRef.id);
+      } catch (e) {
+        console.log(e);
+      }
+    }
+    //try to find user docs
   }
 
-  function signInWithGoogle() {
+  async function signInWithGoogle() {
     const provider = new GoogleAuthProvider();
-    return signInWithRedirect(auth, provider);
+    await signInWithRedirect(auth, provider);
+    return;
   }
 
   function signIn(email: string, password: string) {

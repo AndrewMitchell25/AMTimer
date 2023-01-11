@@ -14,7 +14,7 @@ type AuthContextType = {
     password: string,
     newDisplayName: string
   ) => Promise<UserCredential>;
-  signInWithGoogle: () => Promise<never>;
+  signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   updateUserEmail: (email: string) => Promise<void> | undefined;

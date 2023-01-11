@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useAuth } from "../Contexts/AuthContext";
 import { HiMenuAlt4, HiX } from "react-icons/hi";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { CgProfile } from "react-icons/cg";
 import { useRouter } from "next/navigation";
 
@@ -48,34 +48,37 @@ function Navbar() {
             <motion.button whileTap={{ scale: 0.9 }}>
               <CgProfile
                 onClick={() => setProfile(!profile)}
-                className="w-auto h-8 cursor-pointer hover:text-white"
+                className="w-auto h-6 cursor-pointer hover:text-white"
               />
             </motion.button>
           )}
-          {profile && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.85, ease: "easeOut" }}
-              className="flex absolute top-11 mt-1 w-auto h-auto bg-white right-2 p-4 flex-col items-start space-y-2"
-            >
-              <h2 className="flex">{currentUser.displayName}</h2>
-              <Link href="/profile" className="flex">
-                Profile
-              </Link>
-              <h2
-                onClick={() => {
-                  setProfile(false);
-                  signOut();
-                  router.push("/");
-                }}
-                className="text-blue-400 cursor-pointer flex w-auto"
+          <AnimatePresence>
+            {profile && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.35, ease: "easeOut" }}
+                className="flex absolute top-11 mt-1 w-auto h-auto bg-white right-2 p-4 flex-col items-start space-y-2"
+                onClick={() => setProfile(false)}
               >
-                Sign Out
-              </h2>
-            </motion.div>
-          )}
+                <h2 className="flex">{currentUser.displayName}</h2>
+                <Link href="/profile" className="flex">
+                  Profile
+                </Link>
+                <h2
+                  onClick={() => {
+                    setProfile(false);
+                    signOut();
+                    router.push("/");
+                  }}
+                  className="text-blue-400 cursor-pointer flex w-auto"
+                >
+                  Sign Out
+                </h2>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
         <div className="flex md:hidden justify-center items-center px-2 py-0 list-none">
           <HiMenuAlt4 onClick={() => setToggle(true)} />
@@ -121,21 +124,3 @@ function Navbar() {
 }
 
 export default Navbar;
-
-{
-  /*
-<nav className="flex align-middle h-10">
-      <Link href="/">AMTimer</Link>
-      {currentUser == null ? (
-        <Link
-          href="signin"
-          className="bg-blue-400 p-3 w-auto h-full rounded-md"
-        >
-          Sign In
-        </Link>
-      ) : (
-        <button onClick={signOut}>Sign Out{currentUser.displayName}</button>
-      )}
-    </nav>
-  */
-}

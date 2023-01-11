@@ -1,8 +1,10 @@
 "use client";
-import { run } from "node:test";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Time from "./Time";
 import { timerDelay, formatTime } from "../constants";
+import { useAuth } from "../Contexts/AuthContext";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { db } from "../Firebase/firebase";
 
 function Timer() {
   const [time, setTime] = useState(0);
@@ -12,6 +14,7 @@ function Timer() {
   const [timeStyle, setTimeStyle] = useState("");
   const [downTime, setDownTime] = useState(0);
   const [downTimeIsRunning, setDownTimeIsRunning] = useState(false);
+  const { currentUser } = useAuth() as AuthContextType;
 
   useEffect(() => {
     document.addEventListener("keydown", handleKeyDown);
@@ -37,6 +40,9 @@ function Timer() {
       setIsRunning(false);
       //Generate new scramble?
       //Add time to database?
+      if (currentUser) {
+        addTime(time);
+      }
     } else if (!isRunning && isSpaceBar && releaseTimer) {
       //Start the timer
       setTime(0);
@@ -95,6 +101,28 @@ function Timer() {
     setDownTime(0);
     setTimeStyle("");
   };
+
+  async function addTime(time: Number) {
+    try {
+      const docRef = await addDoc(
+        collection(
+          db,
+          "users",
+          `${currentUser.uid}`,
+          "sessions",
+          "TEST",
+          "times"
+        ),
+        {
+          time: time,
+          timestamp: serverTimestamp(),
+        }
+      );
+      console.log(docRef.id);
+    } catch (e) {
+      console.log(e);
+    }
+  }
 
   return (
     <div>

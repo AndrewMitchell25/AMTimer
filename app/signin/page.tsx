@@ -64,10 +64,7 @@ function SignInPage() {
       <div className="flex flex-col items-center">
         <p className="text-gray-500 text-sm">or you can sign in with</p>
         <motion.button
-          onClick={() => {
-            signInWithGoogle;
-            router.push("/");
-          }}
+          onClick={signInWithGoogle}
           whileTap={{ scale: 0.9 }}
           className=""
         >

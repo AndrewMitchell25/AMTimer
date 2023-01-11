@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { connectFirestoreEmulator, getFirestore } from "firebase/firestore";
 import { getAnalytics } from "firebase/analytics";
 /*
 const app = initializeApp({
@@ -25,5 +25,6 @@ const app = initializeApp({
 
 //const analytics = getAnalytics(app);
 export const auth = getAuth(app);
-export const db = getFirestore();
+export const db = getFirestore(app);
+connectFirestoreEmulator(db, "localhost", 8080);
 export default app;
