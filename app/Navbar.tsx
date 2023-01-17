@@ -59,11 +59,14 @@ function Navbar() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.35, ease: "easeOut" }}
-                className="flex absolute top-11 mt-1 w-auto h-auto bg-white right-2 p-4 flex-col items-start space-y-2"
+                className="flex absolute top-11 mt-1 w-auto h-auto bg-white right-2 p-3 flex-col items-start space-y-2 rounded-sm"
                 onClick={() => setProfile(false)}
               >
                 <h2 className="flex">{currentUser.displayName}</h2>
-                <Link href="/profile" className="flex">
+                <Link
+                  href="/profile"
+                  className="flex hover:bg-slate-100 w-full rounded-sm p-1"
+                >
                   Profile
                 </Link>
                 <h2
@@ -72,7 +75,7 @@ function Navbar() {
                     signOut();
                     router.push("/");
                   }}
-                  className="text-blue-400 cursor-pointer flex w-auto"
+                  className="text-blue-400 cursor-pointer flex hover:bg-slate-100 w-full rounded-sm p-1"
                 >
                   Sign Out
                 </h2>
