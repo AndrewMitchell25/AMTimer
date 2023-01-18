@@ -16,6 +16,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../Firebase/firebase";
 import { AnimatePresence, motion } from "framer-motion";
+import Times from "./Times";
 
 function Timer() {
   const [time, setTime] = useState(0);
@@ -26,11 +27,11 @@ function Timer() {
   const [downTime, setDownTime] = useState(0);
   const [downTimeIsRunning, setDownTimeIsRunning] = useState(false);
   const { currentUser } = useAuth() as AuthContextType;
-  const [sessionName, setSessionName] = useState("CHANGE THIS");
+  const [sessionName, setSessionName] = useState("Select a Session");
   const [sessionOpen, setSessionOpen] = useState(false);
   const [sessionNames, setSessionNames] = useState<string[]>([]);
   const [inputSessionName, setInputSessionName] = useState("");
-  const [sessionTimes, setSessionTimes] = useState<number[]>([]);
+  const [sessionTimes, setSessionTimes] = useState<string[]>([]);
 
   useEffect(() => {
     document.addEventListener("keydown", handleKeyDown);
@@ -57,7 +58,7 @@ function Timer() {
       //Generate new scramble?
       //Add time to database?
       if (currentUser) {
-        addTime(time);
+        addTime(formatTime(time));
       }
     } else if (!isRunning && isSpaceBar && releaseTimer) {
       //Start the timer
@@ -147,7 +148,7 @@ function Timer() {
             orderBy("timestamp", "desc")
           )
         );
-        let t: number[] = [];
+        let t: string[] = [];
         querySnapshot.forEach((doc) => {
           t.push(doc.data().time);
         });
@@ -159,7 +160,7 @@ function Timer() {
     getTimes().catch(console.error);
   }, [sessionName]);
 
-  async function addTime(time: Number) {
+  async function addTime(time: string) {
     try {
       const docRef = await addDoc(
         collection(
@@ -176,6 +177,9 @@ function Timer() {
           scramble: "",
         }
       );
+
+      setSessionTimes([time, ...sessionTimes]);
+
       console.log(docRef.id);
     } catch (e) {
       console.log(e);
@@ -207,7 +211,7 @@ function Timer() {
           <div className="flex justify-center relative w-64">
             <h2 className="flex p-1">Session: </h2>
 
-            <motion.span
+            <motion.div
               whileTap={{ scale: 0.9 }}
               onClick={() => setSessionOpen(!sessionOpen)}
               className="cursor-pointer p-1 relative select-none"
@@ -254,13 +258,11 @@ function Timer() {
                   </motion.div>
                 )}
               </AnimatePresence>
-            </motion.span>
+            </motion.div>
           </div>
         </div>
         <div>
-          {sessionTimes.map((time) => (
-            <motion.div>{time}</motion.div>
-          ))}
+          <Times sessionTimes={sessionTimes} />
         </div>
       </div>
       <div className="flex justify-items-center">
