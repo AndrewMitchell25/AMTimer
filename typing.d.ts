@@ -6,6 +6,13 @@ type cube = {
   eo: Int[];
 };
 
+type time = {
+  id: string;
+  time: string;
+  timestamp: FieldValue;
+  scramble: string;
+};
+
 type AuthContextType = {
   currentUser: User | null;
   signIn: (email: string, password: string) => Promise<UserCredential>;

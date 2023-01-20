@@ -9,6 +9,7 @@ import {
   doc,
   getDoc,
   getDocs,
+  onSnapshot,
   orderBy,
   query,
   serverTimestamp,
@@ -17,6 +18,7 @@ import {
 import { db } from "../Firebase/firebase";
 import { AnimatePresence, motion } from "framer-motion";
 import Times from "./Times";
+import { HiX } from "react-icons/hi";
 
 function Timer() {
   const [time, setTime] = useState(0);
@@ -31,7 +33,7 @@ function Timer() {
   const [sessionOpen, setSessionOpen] = useState(false);
   const [sessionNames, setSessionNames] = useState<string[]>([]);
   const [inputSessionName, setInputSessionName] = useState("");
-  const [sessionTimes, setSessionTimes] = useState<string[]>([]);
+  const [sessionTimes, setSessionTimes] = useState<time[]>([]);
 
   useEffect(() => {
     document.addEventListener("keydown", handleKeyDown);
@@ -137,30 +139,35 @@ function Timer() {
   }, []);
 
   useEffect(() => {
-    const getTimes = async () => {
-      if (currentUser) {
-        const querySnapshot = await getDocs(
-          query(
-            collection(
-              db,
-              `users/${currentUser.uid}/sessions/${sessionName}/times`
-            ),
-            orderBy("timestamp", "desc")
-          )
-        );
-        let t: string[] = [];
-        querySnapshot.forEach((doc) => {
-          t.push(doc.data().time);
-        });
+    if (currentUser) {
+      const q = query(
+        collection(
+          db,
+          `users/${currentUser.uid}/sessions/${sessionName}/times`
+        ),
+        orderBy("timestamp", "desc")
+      );
 
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        let t: time[] = [];
+        querySnapshot.forEach((doc) => {
+          let newTime: time = {
+            id: doc.id,
+            time: doc.data().time,
+            timestamp: doc.data().timestamp,
+            scramble: doc.data().scramble,
+          };
+          t.push(newTime);
+        });
         setSessionTimes(t);
-      }
-    };
-    console.log(sessionTimes);
-    getTimes().catch(console.error);
+      });
+      return unsubscribe;
+    }
   }, [sessionName]);
 
   async function addTime(time: string) {
+    let sT = serverTimestamp();
+
     try {
       const docRef = await addDoc(
         collection(
@@ -173,16 +180,22 @@ function Timer() {
         ),
         {
           time: time,
-          timestamp: serverTimestamp(),
-          scramble: "",
+          timestamp: sT,
+          //CHANGE THE SCRAMBLE TO SCRAMBLE
+          scramble: "R2 U F' L L2 B U' D2 R F2 B L' U2 F D B' L R",
         }
       );
 
-      setSessionTimes([time, ...sessionTimes]);
-
-      console.log(docRef.id);
-    } catch (e) {
-      console.log(e);
+      let newTime: time = {
+        id: docRef.id,
+        time: time,
+        timestamp: sT,
+        //CHANGE THE SCRAMBLE TO SCRAMBLE
+        scramble: "R2 U F' L L2 B U' D2 R F2 B L' U2 F D B' L R",
+      };
+      setSessionTimes([newTime, ...sessionTimes]);
+    } catch {
+      console.error();
     }
   }
 
@@ -199,6 +212,21 @@ function Timer() {
         }
       );
       console.log("created");
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async function deleteSession(session: string) {
+    try {
+      /*
+      const docRef = await setDoc(
+        doc(db, `users/${currentUser.uid}/sessions`, `${session}`),
+        {
+          timestamp: serverTimestamp(),
+        }
+      );
+      */
     } catch (e) {
       console.log(e);
     }
@@ -244,15 +272,26 @@ function Timer() {
                     <span className="w-full p-[1px] my-1 bg-slate-200"></span>
                     {sessionNames.map((session) => (
                       <motion.div
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSessionName(session);
-                          setSessionOpen(!sessionOpen);
-                        }}
+                        className="w-full p-1 flex items-center justify-items-start"
                         key={session}
-                        className="hover:bg-slate-100 w-full p-1"
                       >
-                        {session}
+                        <motion.div
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSessionName(session);
+                            setSessionOpen(!sessionOpen);
+                          }}
+                          whileTap={{ scale: 0.9 }}
+                          className="hover:bg-slate-100 p-1 w-auto"
+                        >
+                          {session}
+                        </motion.div>
+                        <HiX
+                          onClick={() => {
+                            deleteSession(session);
+                          }}
+                          className="flex hover:bg-slate-100 cursor-pointer rounded-md p-1"
+                        />
                       </motion.div>
                     ))}
                   </motion.div>
@@ -262,7 +301,7 @@ function Timer() {
           </div>
         </div>
         <div>
-          <Times sessionTimes={sessionTimes} />
+          <Times sessionTimes={sessionTimes} sessionName={sessionName} />
         </div>
       </div>
       <div className="flex justify-items-center">
