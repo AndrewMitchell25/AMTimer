@@ -29,7 +29,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"
-, "scramble/cube.js"  ],
+, "scramble/old/cube.js"  ],
   "exclude": [
     "node_modules"
   ]

@@ -39,7 +39,7 @@ function Timer() {
   const [inputSessionName, setInputSessionName] = useState("");
   const [sessionTimes, setSessionTimes] = useState<time[]>([]);
   const [scramble, setScramble] = useState("");
-  const [cube, setCube] = useState({});
+  const [cube, setCube] = useState(new Cube());
 
   useEffect(() => {
     document.addEventListener("keydown", handleKeyDown);
@@ -52,8 +52,6 @@ function Timer() {
 
   useEffect(() => {
     getScramble();
-    setCube(new Cube());
-    console.log(cube);
   }, []);
 
   useEffect(() => {
@@ -258,8 +256,15 @@ function Timer() {
   }
 
   function getScramble() {
-    setScramble(generateScramble());
+    setScramble(() => generateScramble());
   }
+
+  useEffect(() => {
+    console.log(scramble);
+    setCube(new Cube());
+    cube.move(scramble);
+    console.log(cube.display());
+  }, [scramble]);
 
   return (
     <div className="grid grid-cols-4 grid-rows-4 w-full h-[80vh]">

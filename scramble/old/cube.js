@@ -1,29 +1,29 @@
-let U = 0,
-  R = 1,
-  F = 2,
-  D = 3,
-  L = 4,
-  B = 5,
-  UR = 0,
-  UF = 1,
-  UL = 2,
-  UB = 3,
-  DR = 4,
-  DF = 5,
-  DL = 6,
-  DB = 7,
-  FR = 8,
-  FL = 9,
-  BL = 10,
-  BR = 11,
-  URF = 0,
-  UFL = 1,
-  ULB = 2,
-  UBR = 3,
-  DFR = 4,
-  DLF = 5,
-  DBL = 6,
-  DRB = 7;
+let U,
+  R,
+  F,
+  D,
+  L,
+  B,
+  UR,
+  UF,
+  UL,
+  UB,
+  DR,
+  DF,
+  DL,
+  DB,
+  FR,
+  FL,
+  BL,
+  BR,
+  URF,
+  UFL,
+  ULB,
+  UBR,
+  DFR,
+  DLF,
+  DBL,
+  DRB;
 
 //centers
 [U, R, F, D, L, B] = [0, 1, 2, 3, 4, 5];
@@ -86,30 +86,23 @@ const edgeColors = [
   ["B", "R"],
 ];
 
-class Cube {
-  center: number[];
-  cp: number[];
-  co: number[];
-  ep: number[];
-  eo: number[];
-  newCenter: number[];
-  newCp: number[];
-  newCo: number[];
-  newEp: number[];
-  newEo: number[];
-
+export default class Cube {
   constructor() {
-    this.center = [0, 1, 2, 3, 4, 5];
-    this.cp = [0, 1, 2, 3, 4, 5, 6, 7];
-    this.co = [0, 0, 0, 0, 0, 0, 0, 0];
-    this.ep = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
-    this.eo = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    this.identity();
 
     this.newCenter = [0, 1, 2, 3, 4, 5];
     this.newCp = [0, 1, 2, 3, 4, 5, 6, 7];
     this.newCo = [0, 0, 0, 0, 0, 0, 0, 0];
     this.newEp = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
     this.newEo = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  }
+
+  identity() {
+    this.center = [0, 1, 2, 3, 4, 5];
+    this.cp = [0, 1, 2, 3, 4, 5, 6, 7];
+    this.co = [0, 0, 0, 0, 0, 0, 0, 0];
+    this.ep = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+    this.eo = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
   }
 
   toJSON() {
@@ -120,6 +113,28 @@ class Cube {
       ep: this.ep,
       eo: this.eo,
     };
+  }
+
+  toArray() {
+    let str = [];
+    for (let i = 0; i < 6; i++) {
+      str[centers[i]] = centerColors[this.center[i]];
+    }
+    for (let i = 0; i < 8; i++) {
+      let c = this.cp[i];
+      let o = this.co[i];
+      for (let j = 0; j < 3; j++) {
+        str[corners[i][j]] = cornerColors[c][(o + j) % 3];
+      }
+    }
+    for (let i = 0; i < 12; i++) {
+      let e = this.ep[i];
+      let o = this.eo[i];
+      for (let j = 0; j < 3; j++) {
+        str[edges[i][j]] = edgeColors[e][(o + j) % 2];
+      }
+    }
+    return str;
   }
 
   toString() {
@@ -206,7 +221,7 @@ class Cube {
     return true;
   }
 
-  multiplyCenters(other: cube) {
+  multiplyCenters(other) {
     for (let i = 0; i < 6; i++) {
       let n = other.center[i];
       this.newCenter[i] = this.center[n];
@@ -215,7 +230,7 @@ class Cube {
     return this;
   }
 
-  multiplyCorners(other: cube) {
+  multiplyCorners(other) {
     for (let i = 0; i < 8; i++) {
       let n = other.cp[i];
       this.newCp[i] = this.cp[n];
@@ -226,7 +241,7 @@ class Cube {
     return this;
   }
 
-  multiplyEdges(other: cube) {
+  multiplyEdges(other) {
     for (let i = 0; i < 12; i++) {
       let n = other.ep[i];
       this.newEp[i] = this.ep[n];
@@ -237,27 +252,27 @@ class Cube {
     return this;
   }
 
-  multiply(other: cube) {
+  multiply(other) {
     this.multiplyCenters(other);
     this.multiplyCorners(other);
     this.multiplyEdges(other);
     return this;
   }
 
-  move(arg: any) {
+  move(arg) {
     let alg = this.parseAlg(arg);
     for (let i = 0; i < alg.length; i++) {
       let move = alg[i];
       let face = move[0];
       let power = move[1];
       for (let j = 0; j <= power; j++) {
-        this.multiply(Cube.moves[face]);
+        this.multiply(this.moves[face]);
       }
     }
     return this;
   }
 
-  parseAlg(arg: any) {
+  parseAlg(arg) {
     if (typeof arg === "string") {
       let alg = arg.split(" ");
       let res = [];
@@ -266,7 +281,7 @@ class Cube {
         if (x.length > 2) {
           return null;
         }
-        let move = Cube.faceNums.get(x[0]);
+        let move = this.faceNums[x[0]];
         let power = 0;
         if (x.length > 1) {
           if (x[1] == "2") {
@@ -285,7 +300,7 @@ class Cube {
     }
   }
 
-  static moves = [
+  moves = [
     //U
     {
       center: [0, 1, 2, 3, 4, 5],
@@ -336,7 +351,7 @@ class Cube {
     },
   ];
 
-  static faceNames = {
+  faceNames = {
     0: "U",
     1: "R",
     2: "F",
@@ -351,20 +366,18 @@ class Cube {
     11: "b",
   };
 
-  static faceNums: Map<string, number> = new Map([
-    ['U', 0],
-    ['R', 1],
-    ['F', 2],
-    ['D', 3],
-    ['L', 4],
-    ['B', 5],
-    ['u', 6],
-    ['r', 7],
-    ['f', 8],
-    ['d', 9],
-    ['l', 10],
-    ['b', 11]
-  ]);
+  faceNums = {
+    U: 0,
+    R: 1,
+    F: 2,
+    D: 3,
+    L: 4,
+    B: 5,
+    u: 6,
+    r: 7,
+    f: 8,
+    d: 9,
+    l: 10,
+    b: 11,
+  };
 }
-
-export default Cube;
