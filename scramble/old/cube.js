@@ -86,7 +86,7 @@ const edgeColors = [
   ["B", "R"],
 ];
 
-export default class Cube {
+class Cube {
   constructor() {
     this.identity();
 
@@ -266,7 +266,7 @@ export default class Cube {
       let face = move[0];
       let power = move[1];
       for (let j = 0; j <= power; j++) {
-        this.multiply(this.moves[face]);
+        this.multiply(Cube.moves[face]);
       }
     }
     return this;
@@ -281,7 +281,7 @@ export default class Cube {
         if (x.length > 2) {
           return null;
         }
-        let move = this.faceNums[x[0]];
+        let move = Cube.faceNums[x[0]];
         let power = 0;
         if (x.length > 1) {
           if (x[1] == "2") {
@@ -300,7 +300,7 @@ export default class Cube {
     }
   }
 
-  moves = [
+  static moves = [
     //U
     {
       center: [0, 1, 2, 3, 4, 5],
@@ -351,7 +351,7 @@ export default class Cube {
     },
   ];
 
-  faceNames = {
+  static faceNames = {
     0: "U",
     1: "R",
     2: "F",
@@ -366,7 +366,7 @@ export default class Cube {
     11: "b",
   };
 
-  faceNums = {
+  static faceNums = {
     U: 0,
     R: 1,
     F: 2,
