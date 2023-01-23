@@ -20,6 +20,9 @@ import { db } from "../Firebase/firebase";
 import { AnimatePresence, motion } from "framer-motion";
 import Times from "./Times";
 import { HiX } from "react-icons/hi";
+import Scramble from "./Scramble";
+import generateScramble from "../scramble/generateScramble";
+import Cube from "../scramble/cube";
 
 function Timer() {
   const [time, setTime] = useState(0);
@@ -35,9 +38,8 @@ function Timer() {
   const [sessionNames, setSessionNames] = useState<string[]>([]);
   const [inputSessionName, setInputSessionName] = useState("");
   const [sessionTimes, setSessionTimes] = useState<time[]>([]);
-  const [scramble, setScramble] = useState(
-    "R2 U F' L L2 B U' D2 R F2 B L' U2 F D B' L R"
-  );
+  const [scramble, setScramble] = useState("");
+  const [cube, setCube] = useState({});
 
   useEffect(() => {
     document.addEventListener("keydown", handleKeyDown);
@@ -46,6 +48,12 @@ function Timer() {
       document.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("keyup", handleKeyUp);
     };
+  }, []);
+
+  useEffect(() => {
+    getScramble();
+    setCube(new Cube());
+    console.log(cube);
   }, []);
 
   useEffect(() => {
@@ -64,7 +72,8 @@ function Timer() {
       //Generate new scramble?
       //Add time to database?
       if (currentUser) {
-        addTime(formatTime(time));
+        addTime(formatTime(time), scramble);
+        getScramble();
       }
     } else if (!isRunning && isSpaceBar && releaseTimer) {
       //Start the timer
@@ -180,7 +189,7 @@ function Timer() {
     }
   }, [sessionName]);
 
-  async function addTime(time: string) {
+  async function addTime(time: string, scramble: string) {
     let sT = serverTimestamp();
 
     try {
@@ -197,7 +206,7 @@ function Timer() {
           time: time,
           timestamp: sT,
           //CHANGE THE SCRAMBLE TO SCRAMBLE
-          scramble: "R2 U F' L L2 B U' D2 R F2 B L' U2 F D B' L R",
+          scramble: scramble,
         }
       );
     } catch {
@@ -248,87 +257,89 @@ function Timer() {
     }
   }
 
+  function getScramble() {
+    setScramble(generateScramble());
+  }
+
   return (
-    <div className="flex w-full">
-      <div className="hidden md:flex w-64 self-start flex-col bg-slate-400 p-3 items-center">
-        <div>
-          <div className="flex justify-center relative w-64">
-            <h2 className="flex p-1">Session: </h2>
+    <div className="grid grid-cols-4 grid-rows-4 w-full h-[80vh]">
+      <div className=" row-span-4 col-span-2 md:col-span-1 bg-slate-400 p-3 text-center">
+        <div className="flex justify-center relative h-auto w-full">
+          <h2 className="flex p-1">Session: </h2>
+          <motion.div
+            whileTap={{ scale: 0.9 }}
+            onClick={() => setSessionOpen(!sessionOpen)}
+            className="cursor-pointer p-1 relative select-none h-auto"
+          >
+            {sessionName}
 
-            <motion.div
-              whileTap={{ scale: 0.9 }}
-              onClick={() => setSessionOpen(!sessionOpen)}
-              className="cursor-pointer p-1 relative select-none"
-            >
-              {sessionName}
-
-              <AnimatePresence>
-                {sessionOpen && (
-                  <motion.div
-                    className="absolute bg-white w-[200px] flex flex-col items-start p-1 top-7 overflow-auto"
-                    onClick={(e) => e.stopPropagation()}
-                    onPointerDownCapture={(e) => e.stopPropagation()}
+            <AnimatePresence>
+              {sessionOpen && (
+                <motion.div
+                  className="absolute bg-white w-[200px] flex flex-col items-start p-1 top-7 overflow-auto"
+                  onClick={(e) => e.stopPropagation()}
+                  onPointerDownCapture={(e) => e.stopPropagation()}
+                >
+                  <motion.button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (inputSessionName.length > 0) {
+                        addSession(inputSessionName);
+                        setSessionName(inputSessionName);
+                        setInputSessionName("");
+                        setSessionOpen(!sessionOpen);
+                      }
+                    }}
+                    whileTap={{ scale: 0.9 }}
                   >
-                    <motion.button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (inputSessionName.length > 0) {
-                          addSession(inputSessionName);
-                          setSessionName(inputSessionName);
-                          setInputSessionName("");
-                          setSessionOpen(!sessionOpen);
-                        }
-                      }}
-                      whileTap={{ scale: 0.9 }}
+                    New
+                  </motion.button>
+                  <input
+                    className="w-full border rounded-sm p-1"
+                    onClick={(e) => e.stopPropagation()}
+                    value={inputSessionName}
+                    onChange={(e) => setInputSessionName(e.target.value)}
+                  ></input>
+                  <span className="w-full p-[1px] my-1 bg-slate-200"></span>
+                  {sessionNames.map((session) => (
+                    <motion.div
+                      className="w-full p-1 flex items-center justify-items-start"
+                      key={session}
                     >
-                      New
-                    </motion.button>
-                    <input
-                      className="w-full border rounded-sm p-1"
-                      onClick={(e) => e.stopPropagation()}
-                      value={inputSessionName}
-                      onChange={(e) => setInputSessionName(e.target.value)}
-                    ></input>
-                    <span className="w-full p-[1px] my-1 bg-slate-200"></span>
-                    {sessionNames.map((session) => (
                       <motion.div
-                        className="w-full p-1 flex items-center justify-items-start"
-                        key={session}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSessionName(session);
+                          setSessionOpen(!sessionOpen);
+                        }}
+                        whileTap={{ scale: 0.9 }}
+                        className="hover:bg-slate-100 p-1 w-auto"
                       >
-                        <motion.div
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSessionName(session);
-                            setSessionOpen(!sessionOpen);
-                          }}
-                          whileTap={{ scale: 0.9 }}
-                          className="hover:bg-slate-100 p-1 w-auto"
-                        >
-                          {session}
-                        </motion.div>
-                        <HiX
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            deleteSession(session);
-                          }}
-                          className="flex hover:bg-slate-100 cursor-pointer rounded-md p-1 text-lg"
-                        />
+                        {session}
                       </motion.div>
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-          </div>
+                      <HiX
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deleteSession(session);
+                        }}
+                        className="flex hover:bg-slate-100 cursor-pointer rounded-md p-1 text-lg"
+                      />
+                    </motion.div>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
         </div>
+
         <div>
           <Times sessionTimes={sessionTimes} sessionName={sessionName} />
         </div>
       </div>
-      <div className="flex justify-items-center flex-col">
-        <div className="flex justify-center text-center w-full h-48">
-          {scramble}
-        </div>
+      <div className="grid col-span-2 md:col-span-3 text-center">
+        <Scramble scramble={scramble} />
+      </div>
+      <div className="grid col-span-2 md:col-span-3 row-span-3 text-center">
         <Time time={formatTime(time)} style={timeStyle} />
       </div>
     </div>
