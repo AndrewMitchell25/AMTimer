@@ -26,7 +26,7 @@ function Navbar() {
             AMTimer
           </Link>
           <ul className="hidden md:flex px-4">
-            {["About", "test", "links", "here"].map((item) => (
+            {["About", "Timer", "links", "here"].map((item) => (
               <li
                 key={`link-${item}`}
                 className="flex justify-center items-center text-md 2xl:text-2xl text-gray-800 px-5"

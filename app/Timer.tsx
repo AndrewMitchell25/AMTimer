@@ -178,6 +178,12 @@ function Timer() {
             time: doc.data().time,
             timestamp: doc.data().timestamp,
             scramble: doc.data().scramble,
+            ao5: doc.data().ao5,
+            ao12: doc.data().ao12,
+            ao50: doc.data().ao50,
+            ao100: doc.data().ao100,
+            plus2: doc.data().plus2,
+            dnf: doc.data().dnf,
           };
           t.push(newTime);
         });
@@ -203,17 +209,28 @@ function Timer() {
         {
           time: time,
           timestamp: sT,
-          //CHANGE THE SCRAMBLE TO SCRAMBLE
           scramble: scramble,
+          ao5: "",
+          ao12: "",
+          ao50: "",
+          ao100: "",
+          plus2: false,
+          dnf: false,
         }
       );
     } catch {
       console.error();
     }
+
+    //Caclulate averages from previous times
+    //increment stats including users all time solve count, solves with cube from session name,
+
+    //Set docref
   }
 
   async function addSession(session: string) {
     if (session.length < 2) {
+      //Create error
       return;
     }
     try {
@@ -221,6 +238,12 @@ function Timer() {
         doc(db, `users/${currentUser.uid}/sessions`, `${session}`),
         {
           timestamp: serverTimestamp(),
+          single: "",
+          ao5: "",
+          ao12: "",
+          ao50: "",
+          ao100: "",
+          cube: "",
         }
       );
     } catch {

@@ -11,6 +11,12 @@ type time = {
   time: string;
   timestamp: FieldValue;
   scramble: string;
+  ao5: string;
+  ao12: string;
+  ao50: string;
+  ao100: string;
+  plus2: boolean;
+  dnf: boolean;
 };
 
 type AuthContextType = {

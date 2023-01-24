@@ -15,6 +15,12 @@ function Times({ sessionTimes, sessionName }: Props) {
     time: "",
     timestamp: "",
     scramble: "",
+    ao5: "",
+    ao12: "",
+    ao50: "",
+    ao100: "",
+    plus2: false,
+    dnf: false,
   });
   const [toggleModal, setToggleModal] = useState(false);
 
@@ -30,7 +36,11 @@ function Times({ sessionTimes, sessionName }: Props) {
               setToggleModal(true);
             }}
           >
-            {time.time}
+            {time.dnf
+              ? time.time + " (DNF)"
+              : time.plus2
+              ? time.time + " (+2)"
+              : time.time}
           </div>
         </motion.div>
       ))}
