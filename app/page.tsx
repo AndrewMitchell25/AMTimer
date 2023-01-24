@@ -1,10 +1,9 @@
-import Timer from "./Timer";
-import Cube from "./CubeState";
+import Cube from "./timer/CubeState";
 
 function Homepage() {
   return (
     <div className="flex justify-center align-middle h-full w-full">
-      <Timer />
+      Homepage
     </div>
   );
 }

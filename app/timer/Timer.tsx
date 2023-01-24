@@ -1,8 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import Time from "./Time";
-import { timerDelay, formatTime } from "../constants";
-import { useAuth } from "../Contexts/AuthContext";
+import { timerDelay, formatTime } from "../../constants";
+import { useAuth } from "../../Contexts/AuthContext";
 import {
   addDoc,
   collection,
@@ -16,13 +16,13 @@ import {
   serverTimestamp,
   setDoc,
 } from "firebase/firestore";
-import { db } from "../Firebase/firebase";
+import { db } from "../../Firebase/firebase";
 import { AnimatePresence, motion } from "framer-motion";
 import Times from "./Times";
 import { HiX } from "react-icons/hi";
 import Scramble from "./Scramble";
-import generateScramble from "../scramble/generateScramble";
-import Cube from "../scramble/cube";
+import generateScramble from "../../scramble/generateScramble";
+import Cube from "../../scramble/cube";
 
 function Timer() {
   const [time, setTime] = useState(0);

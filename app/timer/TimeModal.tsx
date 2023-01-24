@@ -2,8 +2,8 @@ import { deleteDoc, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { motion } from "framer-motion";
 import { Dispatch, SetStateAction } from "react";
 import { HiX } from "react-icons/hi";
-import { useAuth } from "../Contexts/AuthContext";
-import { db } from "../Firebase/firebase";
+import { useAuth } from "../../Contexts/AuthContext";
+import { db } from "../../Firebase/firebase";
 
 interface Props {
   time: time;
