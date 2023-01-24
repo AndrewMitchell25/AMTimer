@@ -19,7 +19,10 @@ function Navbar() {
       <nav className="w-full flex items-center justify-between bg-slate-300 border border-solid border-opacity-20 border-black relative px-2 py-1 backdrop-blur-sm">
         <div className="flex justify-start items-center">
           <img src={""} alt="logo" className="w-auto h-[45px] 2xl:h-[60px]" />
-          <Link href="/" className="text-xl 2xl:text-2xl px-3 font-semibold">
+          <Link
+            href="/"
+            className="text-xl 2xl:text-2xl px-3 font-semibold font-poppins"
+          >
             AMTimer
           </Link>
           <ul className="hidden md:flex px-4">

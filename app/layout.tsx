@@ -10,7 +10,7 @@ export default function RootLayout({
   return (
     <html>
       <head />
-      <body className="bg-gray-100">
+      <body className="bg-gray-100 font-poppins">
         <AuthProvider>
           <Navbar />
           {children}
