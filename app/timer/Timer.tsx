@@ -15,6 +15,7 @@ import {
   query,
   serverTimestamp,
   setDoc,
+  updateDoc,
 } from "firebase/firestore";
 import { db } from "../../Firebase/firebase";
 import { AnimatePresence, motion } from "framer-motion";
@@ -40,7 +41,11 @@ function Timer() {
   const [sessionTimes, setSessionTimes] = useState<time[]>([]);
   const [scramble, setScramble] = useState("");
   const [cube, setCube] = useState(new Cube());
+  const [sessionStats, setSessionStats] = useState<sessionStats>(
+    {} as sessionStats
+  );
 
+  //Add event listeners for key events
   useEffect(() => {
     document.addEventListener("keydown", handleKeyDown);
     document.addEventListener("keyup", handleKeyUp);
@@ -50,25 +55,29 @@ function Timer() {
     };
   }, []);
 
+  //Get an initial scramble on page load
   useEffect(() => {
     getScramble();
   }, []);
 
+  //Start and stop the timer when the spacebar is released
   useEffect(() => {
+    //Check to see if the key pressed is the spacebar
     const isSpaceBar = keyPressed?.key === " ";
 
+    //If red timer is still on, reset
     if (downTimeIsRunning && isSpaceBar) {
       setDownTimeIsRunning(false);
+      //If no timer is on, start the red timer
     } else if (!downTimeIsRunning && isSpaceBar) {
       setDownTime(0);
       setDownTimeIsRunning(true);
     }
-
+    //If spacebar and green timer is on
     if (isRunning && isSpaceBar) {
       //Stop the timer
       setIsRunning(false);
-      //Generate new scramble?
-      //Add time to database?
+      //Add time to database and get a new scramble
       if (currentUser) {
         addTime(formatTime(time), scramble);
         getScramble();
@@ -76,6 +85,7 @@ function Timer() {
     } else if (!isRunning && isSpaceBar && releaseTimer) {
       //Start the timer
       setTime(0);
+      //If no session is chosen, create a new one with the current date
       if (sessionName == "Select a Session") {
         if (currentUser) {
           let d = new Date();
@@ -84,12 +94,14 @@ function Timer() {
           setSessionName(date);
         }
       }
+      //Reset color and set state
       setDownTime(0);
       setTimeStyle("");
       setIsRunning(true);
     }
   }, [keyPressed]);
 
+  //Actual clock, updating every millisecond
   useEffect(() => {
     let interval: NodeJS.Timer;
     if (isRunning) {
@@ -100,6 +112,7 @@ function Timer() {
     return () => clearInterval(interval);
   }, [isRunning]);
 
+  //Clock to count how long red time has been running
   useEffect(() => {
     let interval: NodeJS.Timer;
     if (downTimeIsRunning) {
@@ -110,19 +123,21 @@ function Timer() {
     return () => clearInterval(interval);
   }, [downTimeIsRunning]);
 
-  //Continuously check how long the space button has been pressed
+  //Continuously check how long the space button has been pressed and assign color
   useEffect(() => {
     if (downTime >= timerDelay) {
       setTimeStyle("text-green-600");
       setTime(0);
       setReleaseTimer(true);
-      //Turn off everything except timer?
+      //TODO: Clear UI?
     } else if (downTime > 50) {
       setTimeStyle("text-red-600");
     }
   }, [downTime]);
 
+  //Keydown function
   const handleKeyDown = (e: KeyboardEvent) => {
+    //Return if the key is held down or not the space bar
     if (e.key !== " " || e.repeat) {
       return;
     }
@@ -130,7 +145,10 @@ function Timer() {
     setKeyPressed(e);
     setReleaseTimer(false);
   };
+
+  //Keyup function
   const handleKeyUp = (e: KeyboardEvent) => {
+    //Return if the key is not the space bar
     if (e.key != " ") {
       return;
     }
@@ -140,6 +158,7 @@ function Timer() {
     setTimeStyle("");
   };
 
+  //Add snapshot listener for session names for the current user and add them to state, calls when user changes
   useEffect(() => {
     if (currentUser) {
       const q = query(collection(db, `users/${currentUser.uid}/sessions`));
@@ -153,6 +172,7 @@ function Timer() {
       });
 
       return unsubscribe;
+      //If the user logs out reset the state to default
     } else {
       setSessionNames([]);
       setSessionName("Select a Session");
@@ -160,8 +180,34 @@ function Timer() {
     }
   }, [currentUser]);
 
+  //Add snapshot listener to get session stats and set the state
   useEffect(() => {
     if (currentUser) {
+      const unsubscribe = onSnapshot(
+        doc(db, `users/${currentUser.uid}/sessions`, sessionName),
+        (doc) => {
+          if (doc.exists()) {
+            setSessionStats({
+              timestamp: doc.data().timestamp,
+              single: doc.data().single,
+              ao5: doc.data().ao5,
+              ao12: doc.data().ao12,
+              ao50: doc.data().ao50,
+              ao100: doc.data().ao100,
+              cube: doc.data().cube,
+            });
+          } else {
+            setSessionStats({} as sessionStats);
+          }
+        }
+      );
+    }
+  }, [sessionName]);
+
+  //Set up onSnapshot listener for session times every time the session name changes
+  useEffect(() => {
+    if (currentUser) {
+      //Query the database to get the times in order
       const q = query(
         collection(
           db,
@@ -169,7 +215,7 @@ function Timer() {
         ),
         orderBy("timestamp", "desc")
       );
-
+      //onSnapshot iterate through times and add them to state
       const unsubscribe = onSnapshot(q, (querySnapshot) => {
         let t: time[] = [];
         querySnapshot.forEach((doc) => {
@@ -195,8 +241,8 @@ function Timer() {
 
   async function addTime(time: string, scramble: string) {
     let sT = serverTimestamp();
-
     try {
+      //Add time document to firestore
       const docRef = await addDoc(
         collection(
           db,
@@ -218,22 +264,36 @@ function Timer() {
           dnf: false,
         }
       );
+
+      //Check to see if it's session PB and update
+      const sessionRef = doc(
+        db,
+        `users/${currentUser.uid}/sessions/${sessionName}`
+      );
+      const sessionSnap = await getDoc(sessionRef);
+      if (
+        sessionSnap.exists() &&
+        (time < sessionSnap.data().single || sessionSnap.data().single === "")
+      ) {
+        await updateDoc(sessionRef, {
+          single: time,
+        });
+      }
     } catch {
       console.error();
     }
 
     //Caclulate averages from previous times
     //increment stats including users all time solve count, solves with cube from session name,
-
-    //Set docref
   }
 
   async function addSession(session: string) {
     if (session.length < 2) {
-      //Create error
+      //TODO: Create error
       return;
     }
     try {
+      //Create blank session document in firestore
       const docRef = await setDoc(
         doc(db, `users/${currentUser.uid}/sessions`, `${session}`),
         {
@@ -253,7 +313,7 @@ function Timer() {
 
   async function deleteSession(session: string) {
     try {
-      //not working
+      //Path to current session's times
       const querySnapshot = await getDocs(
         collection(
           db,
@@ -264,10 +324,11 @@ function Timer() {
           "times"
         )
       );
+      //Delete every time in the session
       querySnapshot.forEach(async (doc) => {
         await deleteDoc(doc.ref);
       });
-
+      //Delete the session document
       await deleteDoc(doc(db, `users/${currentUser.uid}/sessions`, session));
       if (sessionName == session) {
         setSessionName("Select a Session");
@@ -278,10 +339,13 @@ function Timer() {
     }
   }
 
+  //Generate a new scramble and set the state
   function getScramble() {
     setScramble(() => generateScramble());
   }
 
+  //Draw the scramble in the console
+  //TODO: Draw to 2D or 3D cube representation
   useEffect(() => {
     console.log(scramble);
     setCube(new Cube());
@@ -358,6 +422,8 @@ function Timer() {
               )}
             </AnimatePresence>
           </motion.div>
+          <h2>Stats: {sessionStats.single}</h2>
+          <h2></h2>
         </div>
 
         <div>

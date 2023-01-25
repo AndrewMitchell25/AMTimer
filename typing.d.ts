@@ -19,6 +19,16 @@ type time = {
   dnf: boolean;
 };
 
+type sessionStats = {
+  timestamp: any;
+  single: string;
+  ao5: string;
+  ao12: string;
+  ao50: string;
+  ao100: string;
+  cube: string;
+};
+
 type AuthContextType = {
   currentUser: User | null;
   signIn: (email: string, password: string) => Promise<UserCredential>;
