@@ -29,8 +29,16 @@ type sessionStats = {
   cube: string;
 };
 
+type UserData = {
+  dateCreated: FieldValue;
+  displayName: string;
+  pbs: {};
+  totalSolves: number;
+};
+
 type AuthContextType = {
   currentUser: User | null;
+  currentUserData: UserData | null;
   signIn: (email: string, password: string) => Promise<UserCredential>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;

@@ -1,8 +1,6 @@
 "use client";
 
 import {
-  createUserWithEmailAndPassword,
-  GoogleAuthProvider,
   onAuthStateChanged,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
@@ -12,7 +10,7 @@ import {
   User,
   updateProfile,
 } from "firebase/auth";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc } from "firebase/firestore";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { auth, db } from "../Firebase/firebase";
 
@@ -25,6 +23,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 const AuthProvider: React.FC<Props> = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [currentUserData, setCurrentUserData] = useState<UserData | null>(null);
 
   function signIn(email: string, password: string) {
     return signInWithEmailAndPassword(auth, email, password);
@@ -57,8 +56,20 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
   }
 
   useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, async (user) => {
       setCurrentUser(user);
+      if (user) {
+        const dataSnap = await getDoc(doc(db, "users", `${user.uid}`));
+        if (dataSnap.exists()) {
+          const data = dataSnap.data();
+          setCurrentUserData({
+            dateCreated: data.dateCreated,
+            displayName: data.displayName,
+            pbs: data.pbs,
+            totalSolves: data.totalSolves,
+          });
+        }
+      }
 
       if (loading) {
         setLoading(false);
@@ -68,6 +79,7 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
 
   const value = {
     currentUser,
+    currentUserData,
     signIn,
     signOut,
     resetPassword,

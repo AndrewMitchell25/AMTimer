@@ -16,6 +16,7 @@ import {
   addDoc,
   collection,
   doc,
+  getDoc,
   serverTimestamp,
   setDoc,
 } from "firebase/firestore";
@@ -51,18 +52,27 @@ function SignUpPage() {
         //Add the user to the database
         {
           try {
-            const docRef = await setDoc(doc(db, "users", `${user.user.uid}`), {
-              totalSolves: 0,
-              dateCreated: serverTimestamp(),
-              displayName: formData.displayName,
-              pbs: {
-                single: "",
-                ao5: "",
-                ao12: "",
-                ao50: "",
-                ao100: "",
-              },
-            });
+            //Check to see if userDoc already exists and don't overwrite it
+            const oldDocRef = await getDoc(
+              doc(db, "users", `${user.user.uid}`)
+            );
+            if (!oldDocRef.exists()) {
+              const docRef = await setDoc(
+                doc(db, "users", `${user.user.uid}`),
+                {
+                  totalSolves: 0,
+                  dateCreated: user.user.metadata.creationTime,
+                  displayName: formData.displayName,
+                  pbs: {
+                    single: "",
+                    ao5: "",
+                    ao12: "",
+                    ao50: "",
+                    ao100: "",
+                  },
+                }
+              );
+            }
           } catch (e) {
             console.log(e);
           }
@@ -83,18 +93,22 @@ function SignUpPage() {
     const provider = new GoogleAuthProvider();
     await signInWithPopup(auth, provider).then(async (result) => {
       try {
-        const docRef = await setDoc(doc(db, "users", `${result.user.uid}`), {
-          totalSolves: 0,
-          dateCreated: serverTimestamp(),
-          displayName: result.user.displayName,
-          pbs: {
-            single: "",
-            ao5: "",
-            ao12: "",
-            ao50: "",
-            ao100: "",
-          },
-        });
+        //Check to see if userDoc already exists and don't overwrite it
+        const oldDocRef = await getDoc(doc(db, "users", `${result.user.uid}`));
+        if (!oldDocRef.exists()) {
+          const docRef = await setDoc(doc(db, "users", `${result.user.uid}`), {
+            totalSolves: 0,
+            dateCreated: result.user.metadata.creationTime,
+            displayName: result.user.displayName,
+            pbs: {
+              single: "",
+              ao5: "",
+              ao12: "",
+              ao50: "",
+              ao100: "",
+            },
+          });
+        }
         setLoading(false);
         router.push("/");
       } catch {

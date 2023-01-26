@@ -9,7 +9,8 @@ import { CgProfile } from "react-icons/cg";
 import { useRouter } from "next/navigation";
 
 function Navbar() {
-  const { currentUser, signOut } = useAuth() as AuthContextType;
+  const { currentUser, currentUserData, signOut } =
+    useAuth() as AuthContextType;
   const [toggle, setToggle] = useState(false);
   const [profile, setProfile] = useState(false);
   const router = useRouter();
@@ -65,7 +66,9 @@ function Navbar() {
                 className="flex absolute top-11 mt-1 w-auto h-auto bg-white right-2 p-3 flex-col items-start space-y-2 rounded-sm"
                 onClick={() => setProfile(false)}
               >
-                <h2 className="flex">{currentUser.displayName}</h2>
+                {currentUserData && (
+                  <h2 className="flex">{currentUserData.displayName}</h2>
+                )}
                 <Link
                   href="/profile"
                   className="flex hover:bg-slate-100 w-full rounded-sm p-1"
