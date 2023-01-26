@@ -26,33 +26,6 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  async function signUp(
-    email: string,
-    password: string,
-    newDisplayName: string
-  ) {
-    await createUserWithEmailAndPassword(auth, email, password);
-    if (currentUser) {
-      try {
-        const date = Date.now;
-        const docRef = await addDoc(collection(db, "userData"), {
-          currentSession: date,
-          sessions: [date],
-        });
-        console.log(docRef.id);
-      } catch (e) {
-        console.log(e);
-      }
-    }
-    //try to find user docs
-  }
-
-  async function signInWithGoogle() {
-    const provider = new GoogleAuthProvider();
-    await signInWithRedirect(auth, provider);
-    return;
-  }
-
   function signIn(email: string, password: string) {
     return signInWithEmailAndPassword(auth, email, password);
   }
@@ -96,8 +69,6 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
   const value = {
     currentUser,
     signIn,
-    signUp,
-    signInWithGoogle,
     signOut,
     resetPassword,
     updateUserEmail,

@@ -32,12 +32,6 @@ type sessionStats = {
 type AuthContextType = {
   currentUser: User | null;
   signIn: (email: string, password: string) => Promise<UserCredential>;
-  signUp: (
-    email: string,
-    password: string,
-    newDisplayName: string
-  ) => Promise<UserCredential>;
-  signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   updateUserEmail: (email: string) => Promise<void> | undefined;

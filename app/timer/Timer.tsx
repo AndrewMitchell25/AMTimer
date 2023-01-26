@@ -10,6 +10,7 @@ import {
   doc,
   getDoc,
   getDocs,
+  increment,
   onSnapshot,
   orderBy,
   query,
@@ -279,6 +280,14 @@ function Timer() {
           single: time,
         });
       }
+      //Increment all time app solves
+      const dataRef = updateDoc(doc(db, "appData/data"), {
+        totalSolves: increment(1),
+      });
+
+      const userRef = updateDoc(doc(db, `users/${currentUser.uid}`), {
+        totalSolves: increment(1),
+      });
     } catch {
       console.error();
     }
@@ -294,6 +303,15 @@ function Timer() {
     }
     try {
       //Create blank session document in firestore
+      const oldSession = await getDoc(
+        doc(db, `users/${currentUser.uid}/sessions`, `${session}`)
+      );
+      if (oldSession.exists()) {
+        //TODO: Create error
+        console.log("Session already exists");
+        return;
+      }
+
       const docRef = await setDoc(
         doc(db, `users/${currentUser.uid}/sessions`, `${session}`),
         {

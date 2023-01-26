@@ -6,6 +6,19 @@ import { useAuth } from "../../Contexts/AuthContext";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { AiFillGoogleCircle } from "react-icons/ai";
+import {
+  createUserWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup,
+} from "firebase/auth";
+import { auth, db } from "../../Firebase/firebase";
+import {
+  addDoc,
+  collection,
+  doc,
+  serverTimestamp,
+  setDoc,
+} from "firebase/firestore";
 
 function SignUpPage() {
   const [formData, setFormData] = useState({
@@ -14,8 +27,7 @@ function SignUpPage() {
     passwordConfirm: "",
     displayName: "",
   });
-  const { signUp, updateUserDisplayName, signInWithGoogle } =
-    useAuth() as AuthContextType;
+  const { currentUser } = useAuth() as AuthContextType;
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -30,11 +42,65 @@ function SignUpPage() {
     try {
       setError("");
       setLoading(true);
-      await signUp(formData.email, formData.password, formData.displayName);
+      //Actual signup function
+      await createUserWithEmailAndPassword(
+        auth,
+        formData.email,
+        formData.password
+      ).then(async (user) =>
+        //Add the user to the database
+        {
+          try {
+            const docRef = await setDoc(doc(db, "users", `${user.user.uid}`), {
+              totalSolves: 0,
+              dateCreated: serverTimestamp(),
+              displayName: formData.displayName,
+              pbs: {
+                single: "",
+                ao5: "",
+                ao12: "",
+                ao50: "",
+                ao100: "",
+              },
+            });
+          } catch (e) {
+            console.log(e);
+          }
+        }
+      );
+
+      setLoading(false);
       router.push("/");
     } catch {
       setError("Failed to create an account");
     }
+    setLoading(false);
+  }
+
+  async function signInWithGoogle() {
+    setError("");
+    setLoading(true);
+    const provider = new GoogleAuthProvider();
+    await signInWithPopup(auth, provider).then(async (result) => {
+      try {
+        const docRef = await setDoc(doc(db, "users", `${result.user.uid}`), {
+          totalSolves: 0,
+          dateCreated: serverTimestamp(),
+          displayName: result.user.displayName,
+          pbs: {
+            single: "",
+            ao5: "",
+            ao12: "",
+            ao50: "",
+            ao100: "",
+          },
+        });
+        setLoading(false);
+        router.push("/");
+      } catch {
+        setError("Failed to create an account");
+      }
+    });
     setLoading(false);
   }
 

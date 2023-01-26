@@ -6,10 +6,12 @@ import { useAuth } from "../../Contexts/AuthContext";
 import { AiFillGoogleCircle } from "react-icons/ai";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { auth } from "../../Firebase/firebase";
 
 function SignInPage() {
   const [formData, setFormData] = useState({ email: "", password: "" });
-  const { signIn, signInWithGoogle } = useAuth() as AuthContextType;
+  const { signIn } = useAuth() as AuthContextType;
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -21,11 +23,21 @@ function SignInPage() {
       setError("");
       setLoading(true);
       await signIn(formData.email, formData.password);
+      setLoading(false);
       router.push("/");
     } catch {
       setError("Failed to sign in");
     }
     setLoading(false);
+  }
+
+  async function signInWithGoogle() {
+    setError("");
+    setLoading(true);
+    const provider = new GoogleAuthProvider();
+    await signInWithPopup(auth, provider);
+    setLoading(false);
+    router.push("/");
   }
 
   return (
