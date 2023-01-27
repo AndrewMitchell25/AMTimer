@@ -3,8 +3,6 @@
 import {
   onAuthStateChanged,
   sendPasswordResetEmail,
-  signInWithEmailAndPassword,
-  signInWithRedirect,
   updateEmail,
   updatePassword,
   User,
@@ -24,10 +22,6 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentUserData, setCurrentUserData] = useState<UserData | null>(null);
-
-  function signIn(email: string, password: string) {
-    return signInWithEmailAndPassword(auth, email, password);
-  }
 
   function signOut() {
     return auth.signOut();
@@ -58,6 +52,7 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
   useEffect(() => {
     onAuthStateChanged(auth, async (user) => {
       setCurrentUser(user);
+      //TODO: FIX THIS
       if (user) {
         const dataSnap = await getDoc(doc(db, "users", `${user.uid}`));
         if (dataSnap.exists()) {
@@ -80,7 +75,6 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
   const value = {
     currentUser,
     currentUserData,
-    signIn,
     signOut,
     resetPassword,
     updateUserEmail,

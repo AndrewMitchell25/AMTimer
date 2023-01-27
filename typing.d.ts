@@ -39,7 +39,6 @@ type UserData = {
 type AuthContextType = {
   currentUser: User | null;
   currentUserData: UserData | null;
-  signIn: (email: string, password: string) => Promise<UserCredential>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   updateUserEmail: (email: string) => Promise<void> | undefined;

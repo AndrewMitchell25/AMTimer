@@ -6,12 +6,16 @@ import { useAuth } from "../../Contexts/AuthContext";
 import { AiFillGoogleCircle } from "react-icons/ai";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { auth } from "../../Firebase/firebase";
+import {
+  GoogleAuthProvider,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+} from "firebase/auth";
+import { auth, db } from "../../Firebase/firebase";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 
 function SignInPage() {
   const [formData, setFormData] = useState({ email: "", password: "" });
-  const { signIn } = useAuth() as AuthContextType;
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -22,7 +26,7 @@ function SignInPage() {
     try {
       setError("");
       setLoading(true);
-      await signIn(formData.email, formData.password);
+      await signInWithEmailAndPassword(auth, formData.email, formData.password);
       setLoading(false);
       router.push("/");
     } catch {
@@ -35,9 +39,31 @@ function SignInPage() {
     setError("");
     setLoading(true);
     const provider = new GoogleAuthProvider();
-    await signInWithPopup(auth, provider);
+    await signInWithPopup(auth, provider).then(async (result) => {
+      try {
+        //Check to see if userDoc already exists and don't overwrite it
+        const oldDocRef = await getDoc(doc(db, "users", `${result.user.uid}`));
+        if (!oldDocRef.exists()) {
+          const docRef = await setDoc(doc(db, "users", `${result.user.uid}`), {
+            totalSolves: 0,
+            dateCreated: result.user.metadata.creationTime,
+            displayName: result.user.displayName,
+            pbs: {
+              single: "",
+              ao5: "",
+              ao12: "",
+              ao50: "",
+              ao100: "",
+            },
+          });
+        }
+        setLoading(false);
+        router.push("/");
+      } catch {
+        setError("Failed to create an account");
+      }
+    });
     setLoading(false);
-    router.push("/");
   }
 
   return (
