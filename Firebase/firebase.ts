@@ -26,5 +26,5 @@ const app = initializeApp({
 //const analytics = getAnalytics(app);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
-connectFirestoreEmulator(db, "localhost", 8080);
+//connectFirestoreEmulator(db, "localhost", 8080);
 export default app;

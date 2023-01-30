@@ -136,7 +136,6 @@ function SignUpPage() {
             })
           }
           required
-          placeholder="Email"
         />
         <label htmlFor="password">Password</label>
         <input
@@ -151,7 +150,6 @@ function SignUpPage() {
             })
           }
           required
-          placeholder="Password"
         />
         <label htmlFor="password-confirm">Password Confirmation</label>
         <input
@@ -166,7 +164,6 @@ function SignUpPage() {
             })
           }
           required
-          placeholder="Password Confirmation"
         />
         <label>User Name</label>
         <input
@@ -181,7 +178,6 @@ function SignUpPage() {
             })
           }
           required
-          placeholder="User Name"
         />
         <motion.button
           whileTap={{ scale: 0.9 }}

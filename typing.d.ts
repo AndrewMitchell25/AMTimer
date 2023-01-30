@@ -45,3 +45,8 @@ type AuthContextType = {
   updateUserPassword: (password: string) => Promise<void> | undefined;
   updateUserDisplayName: (newDisplayName: string) => Promise<void> | undefined;
 };
+
+declare module "*.png" {
+  const path: string;
+  export default path;
+}

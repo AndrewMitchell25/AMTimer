@@ -1,6 +1,7 @@
 import AuthProvider from "../Contexts/AuthContext";
 import "../styles/globals.css";
 import Navbar from "./Navbar";
+import NewNavbar from "./NewNavbar";
 
 export default function RootLayout({
   children,
@@ -10,9 +11,9 @@ export default function RootLayout({
   return (
     <html>
       <head />
-      <body className="bg-gray-100 font-poppins">
+      <body className="bg-neutral-900 font-poppins">
         <AuthProvider>
-          <Navbar />
+          <NewNavbar />
           {children}
         </AuthProvider>
       </body>

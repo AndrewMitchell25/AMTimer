@@ -69,7 +69,7 @@ function SignInPage() {
   return (
     <div className="flex items-center flex-col">
       <h2 className="mt-10 text-2xl font-semibold">Sign In</h2>
-      {error && <p>{error}</p>}
+      {error && <p className="text-red-500">{error}</p>}
       <form onSubmit={handleSubmit} className="flex flex-col mt-8">
         <label htmlFor="email">Email</label>
         <input
@@ -79,7 +79,6 @@ function SignInPage() {
             setFormData({ email: e.target.value, password: formData.password })
           }
           required
-          placeholder="Email"
         />
         <label htmlFor="password">Password</label>
         <input
@@ -89,7 +88,6 @@ function SignInPage() {
             setFormData({ email: formData.email, password: e.target.value })
           }
           required
-          placeholder="Password"
         />
         <motion.button
           whileTap={{ scale: 0.9 }}
