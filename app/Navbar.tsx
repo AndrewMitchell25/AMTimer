@@ -17,7 +17,7 @@ function Navbar() {
 
   return (
     <>
-      <nav className="w-full flex items-center h-[50px] justify-between bg-slate-300 border border-solid border-opacity-20 border-black relative px-2 py-1 backdrop-blur-sm">
+      <nav className="w-full max-w-screen flex items-center h-[50px] justify-between bg-slate-300 border border-solid border-opacity-20 border-black relative px-2 py-1 backdrop-blur-sm">
         <div className="flex justify-start items-center">
           <img src={""} alt="logo" className="w-auto h-[45px] 2xl:h-[60px]" />
           <Link

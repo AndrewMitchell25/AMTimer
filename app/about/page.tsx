@@ -2,7 +2,7 @@ import React from "react";
 
 function AboutPage() {
   return (
-    <div>
+    <div className="text-neutral-100">
       <h1>About AMTimer</h1>
       <p>
         Hi, my name is Andrew, and I am an undergraduate student at the
@@ -25,6 +25,7 @@ function AboutPage() {
           My WCA profile
         </a>
       </p>
+      <p>This project is still under development.</p>
       <p>Check out more of my projects on my portfolio at </p>
       <a
         href="https://andrewmitchell25.github.io/"

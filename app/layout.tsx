@@ -11,7 +11,7 @@ export default function RootLayout({
   return (
     <html>
       <head />
-      <body className="bg-neutral-900 font-poppins">
+      <body className="bg-neutral-900 font-poppins overflow-auto">
         <AuthProvider>
           <NewNavbar />
           {children}

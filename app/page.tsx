@@ -7,21 +7,27 @@ import Image from "next/image";
 function Homepage() {
   return (
     <>
-      <div className="bg-red-600 w-96 max-w-[50vw] absolute h-screen top-0 right-0 -z-10"></div>
-      <div className="flex h-[90vh] w-full text-neutral-100 p-4 flex-col xl:flex-row">
-        <div className="flex items-center text-center xl:text-left xl:items-start flex-col xl:ml-56 xl:mt-28 ">
-          <h1 className="font-bold text-9xl">AMTimer</h1>
-          <h2 className="font-semibold text-4xl">
+      <div className="bg-red-600 w-[50vw] md:w-96 absolute h-screen top-0 right-0 -z-20"></div>
+      <div className="flex h-[95vh] w-full text-neutral-100 p-4 flex-col xl:flex-row">
+        <div className="hidden lg:block text-[42rem] text-neutral-100 font-bold absolute -left-32 opacity-5 top-0 h-auto -z-10 select-none">
+          AM
+        </div>
+        <div className="flex items-center text-center xl:text-left xl:items-start flex-col xl:ml-56 xl:mt-28 mt-10 ">
+          <h1 className="font-bold lg:text-9xl md:text-8xl text-7xl">
+            AMTimer
+          </h1>
+          <h2 className="font-semibold lg:text-4xl md:text-3xl text-2xl mt-4 md:mt-0">
             The website for all your cubing needs.
           </h2>
-          <p className="text text-xl max-w-2xl mt-4">
+          <p className="text lg:text-xl text-lg max-w-2xl mt-4">
             Delve into the world of speedcubing with this all-in-one timer,
             including personalized stats, tutorials, and more.
           </p>
-          <div className="flex w-full mt-16 space-x-11">
+          <div className="flex w-full mt-16 space-x-11 xl:justify-start justify-center">
             <Link
-              href="/"
-              className="text-xl rounded-lg text-center p-2 border-2 border-red-600 text-red-600 flex items-center"
+              href="/about"
+              className="text-xl rounded-lg text-center p-2 border-2 border-neutral-100 text-neutral-100 md:border-red-600 md:text-red-600 flex items-center"
+              scroll={false}
             >
               Learn More
               <BsArrowRight className="ml-2" />
@@ -34,11 +40,14 @@ function Homepage() {
             </Link>
           </div>
         </div>
-        <div className="flex items-center justify-start lg:w-[30rem]">
-          <div className="aspect-square object-contain w-full mt-28">
+        <div className="flex items-center justify-start lg:w-[30rem] w-[10rem]">
+          <div className="aspect-square object-contain w-full select-none">
             <Image src={heroCube} alt="cube" fill={false} />
           </div>
         </div>
+      </div>
+      <div id="learn-more" className="h-full min-h-screen text-neutral-100">
+        Learn More Here...Eventually
       </div>
     </>
   );

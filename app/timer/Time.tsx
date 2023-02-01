@@ -5,7 +5,7 @@ type Props = {
 
 function Time({ time, style }: Props) {
   return (
-    <div className={`${style} font-sans`}>
+    <div className={`${style} font-sans text-neutral-100`}>
       <span className="text-[20vh]">{time.slice(0, -2)}</span>
       <span className="text-[8vh]">{time.slice(-2)}</span>
     </div>
