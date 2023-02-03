@@ -8,11 +8,12 @@ import logo from "../assets/images/logo.png";
 import Image from "next/image";
 import { CgProfile } from "react-icons/cg";
 import NavLink from "./NavLink";
+import { usePathname } from "next/navigation";
 
 function NewNavbar() {
   const { currentUser } = useAuth() as AuthContextType;
   const [toggle, setToggle] = useState(false);
-  const [active, setActive] = useState("Home");
+  const routerPath = usePathname();
 
   const links = [];
 
@@ -29,9 +30,9 @@ function NewNavbar() {
       </div>
       <div className="hidden md:flex flex-row h-full w-full">
         <ul className="flex space-x-10 ml-14 h-full text-center items-center">
-          <NavLink text="Home" active={active} setActive={setActive} />
-          <NavLink text="About" active={active} setActive={setActive} />
-          <NavLink text="Timer" active={active} setActive={setActive} />
+          <NavLink text="Home" active={routerPath == "/"} />
+          <NavLink text="About" active={routerPath == "/about"} />
+          <NavLink text="Timer" active={routerPath == "/timer"} />
         </ul>
 
         {currentUser ? (

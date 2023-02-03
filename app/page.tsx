@@ -18,6 +18,12 @@ function Homepage() {
           </h1>
           <h2 className="font-semibold lg:text-4xl md:text-3xl text-2xl mt-4 md:mt-0">
             The website for all your cubing needs.
+            {/*"Unlock Your Inner Speedcuber with Our Timer App"
+"Revolutionize Your Rubik's Cube Solving Experience"
+"Track Your Progress and Improve Your Time with Our Timer"
+"Solve Faster and Smarter with the Rubik's Cube Timer App"
+"The Ultimate Tool for Every Rubik's Cube Enthusiast"
+ The Ultimate Rubik's Cube Companion*/}
           </h2>
           <p className="text lg:text-xl text-lg max-w-2xl mt-4">
             Delve into the world of speedcubing with this all-in-one timer,
