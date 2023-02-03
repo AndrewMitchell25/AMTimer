@@ -1,5 +1,5 @@
 function loading() {
-  return <div>loading</div>;
+  return <div className="text-neutral-100">loading</div>;
 }
 
 export default loading;

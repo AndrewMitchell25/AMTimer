@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Time from "./Time";
 import { timerDelay, formatTime } from "../../constants";
 import { useAuth } from "../../Contexts/AuthContext";
@@ -25,6 +25,7 @@ import { HiX } from "react-icons/hi";
 import Scramble from "./Scramble";
 import generateScramble from "../../scramble/generateScramble";
 import Cube from "../../scramble/cube";
+import clickOutside from "../../constants/clickOutside";
 
 function Timer() {
   const [time, setTime] = useState(0);
@@ -45,6 +46,9 @@ function Timer() {
   const [sessionStats, setSessionStats] = useState<sessionStats>(
     {} as sessionStats
   );
+  const sessionListRef = useRef(null);
+
+  clickOutside([sessionListRef], () => setSessionOpen(false));
 
   //Add event listeners for key events
   useEffect(() => {
@@ -389,6 +393,7 @@ function Timer() {
                   className="absolute bg-white w-[200px] flex flex-col items-start p-1 top-7 overflow-auto"
                   onClick={(e) => e.stopPropagation()}
                   onPointerDownCapture={(e) => e.stopPropagation()}
+                  ref={sessionListRef}
                 >
                   <motion.button
                     onClick={(e) => {
