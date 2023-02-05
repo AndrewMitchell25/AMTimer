@@ -21,12 +21,21 @@ type time = {
 
 type sessionStats = {
   timestamp: any;
-  single: string;
-  ao5: string;
-  ao12: string;
-  ao50: string;
-  ao100: string;
+  single: statTime;
+  ao5: statTime[];
+  ao12: statTime[];
+  ao50: statTime[];
+  ao100: statTime[];
   cube: string;
+};
+
+type statTime = {
+  id: string;
+  time: string;
+  timestamp: string;
+  scramble: string;
+  plus2: boolean;
+  dnf: boolean;
 };
 
 type UserData = {

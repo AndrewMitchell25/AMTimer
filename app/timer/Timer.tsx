@@ -26,6 +26,9 @@ import Scramble from "./Scramble";
 import generateScramble from "../../scramble/generateScramble";
 import Cube from "../../scramble/cube";
 import clickOutside from "../../constants/clickOutside";
+import drawScramble from "../../constants/drawScramble";
+import addSession from "../../constants/addSession";
+import deleteSession from "../../constants/deleteSession";
 
 function Timer() {
   const [time, setTime] = useState(0);
@@ -42,10 +45,23 @@ function Timer() {
   const [inputSessionName, setInputSessionName] = useState("");
   const [sessionTimes, setSessionTimes] = useState<time[]>([]);
   const [scramble, setScramble] = useState("");
-  const [cube, setCube] = useState(new Cube());
-  const [sessionStats, setSessionStats] = useState<sessionStats>(
-    {} as sessionStats
-  );
+  const [cube, setCube] = useState<Cube>(new Cube());
+  const [sessionStats, setSessionStats] = useState<sessionStats>({
+    timestamp: "",
+    single: {
+      id: "",
+      time: "",
+      timestamp: "",
+      scramble: "",
+      plus2: false,
+      dnf: false,
+    },
+    ao5: [],
+    ao12: [],
+    ao50: [],
+    ao100: [],
+    cube: "",
+  });
   const sessionListRef = useRef(null);
 
   clickOutside([sessionListRef], () => setSessionOpen(false));
@@ -95,7 +111,7 @@ function Timer() {
         if (currentUser) {
           let d = new Date();
           let date = d.toISOString().substring(0, 10);
-          addSession(date);
+          addSession(date, currentUser);
           setSessionName(date);
         }
       }
@@ -202,7 +218,22 @@ function Timer() {
               cube: doc.data().cube,
             });
           } else {
-            setSessionStats({} as sessionStats);
+            setSessionStats({
+              timestamp: "",
+              single: {
+                id: "",
+                time: "",
+                timestamp: "",
+                scramble: "",
+                plus2: false,
+                dnf: false,
+              },
+              ao5: [],
+              ao12: [],
+              ao50: [],
+              ao100: [],
+              cube: "",
+            } as sessionStats);
           }
         }
       );
@@ -223,6 +254,18 @@ function Timer() {
       //onSnapshot iterate through times and add them to state
       const unsubscribe = onSnapshot(q, (querySnapshot) => {
         let t: time[] = [];
+        let minTime: time = {
+          id: "",
+          time: "99999999",
+          timestamp: "",
+          scramble: "",
+          ao5: "",
+          ao12: "",
+          ao50: "",
+          ao100: "",
+          plus2: false,
+          dnf: false,
+        };
         querySnapshot.forEach((doc) => {
           let newTime: time = {
             id: doc.id,
@@ -237,8 +280,13 @@ function Timer() {
             dnf: doc.data().dnf,
           };
           t.push(newTime);
+          if (newTime.time < minTime.time) {
+            minTime = newTime;
+          }
         });
         setSessionTimes(t);
+        //TODO: update sessionStats in database not just state
+        setSessionStats({ ...sessionStats, single: minTime });
       });
       return unsubscribe;
     }
@@ -269,7 +317,7 @@ function Timer() {
           dnf: false,
         }
       );
-
+      /*
       //Check to see if it's session PB and update
       const sessionRef = doc(
         db,
@@ -278,12 +326,22 @@ function Timer() {
       const sessionSnap = await getDoc(sessionRef);
       if (
         sessionSnap.exists() &&
-        (time < sessionSnap.data().single || sessionSnap.data().single === "")
+        (time < sessionSnap.data().single.time ||
+          sessionSnap.data().single.time === "")
       ) {
         await updateDoc(sessionRef, {
-          single: time,
+          single: {
+            id: docRef.id,
+            time: time,
+            timestamp: sT,
+            scramble: scramble,
+            plus2: false,
+            dnf: false,
+          },
         });
       }
+
+      */
       //Increment all time app solves
       const dataRef = updateDoc(doc(db, "appData/data"), {
         totalSolves: increment(1),
@@ -300,80 +358,12 @@ function Timer() {
     //increment stats including users all time solve count, solves with cube from session name,
   }
 
-  async function addSession(session: string) {
-    if (session.length < 2) {
-      //TODO: Create error
-      return;
-    }
-    try {
-      //Create blank session document in firestore
-      const oldSession = await getDoc(
-        doc(db, `users/${currentUser.uid}/sessions`, `${session}`)
-      );
-      if (oldSession.exists()) {
-        //TODO: Create error
-        console.log("Session already exists");
-        return;
-      }
-
-      const docRef = await setDoc(
-        doc(db, `users/${currentUser.uid}/sessions`, `${session}`),
-        {
-          timestamp: serverTimestamp(),
-          single: "",
-          ao5: "",
-          ao12: "",
-          ao50: "",
-          ao100: "",
-          cube: "",
-        }
-      );
-    } catch {
-      console.error();
-    }
-  }
-
-  async function deleteSession(session: string) {
-    try {
-      //Path to current session's times
-      const querySnapshot = await getDocs(
-        collection(
-          db,
-          "users",
-          `${currentUser.uid}`,
-          "sessions",
-          `${session}`,
-          "times"
-        )
-      );
-      //Delete every time in the session
-      querySnapshot.forEach(async (doc) => {
-        await deleteDoc(doc.ref);
-      });
-      //Delete the session document
-      await deleteDoc(doc(db, `users/${currentUser.uid}/sessions`, session));
-      if (sessionName == session) {
-        setSessionName("Select a Session");
-        setSessionTimes([]);
-      }
-    } catch {
-      console.error();
-    }
-  }
-
   //Generate a new scramble and set the state
   function getScramble() {
     setScramble(() => generateScramble());
   }
 
-  //Draw the scramble in the console
-  //TODO: Draw to 2D or 3D cube representation
-  useEffect(() => {
-    console.log(scramble);
-    setCube(new Cube());
-    cube.move(scramble);
-    console.log(cube.display());
-  }, [scramble]);
+  drawScramble(scramble, cube, setCube);
 
   return (
     <div className="grid grid-cols-4 grid-rows-4 w-full h-[80vh]">
@@ -399,7 +389,7 @@ function Timer() {
                     onClick={(e) => {
                       e.stopPropagation();
                       if (inputSessionName.length > 0) {
-                        addSession(inputSessionName);
+                        addSession(inputSessionName, currentUser);
                         setSessionName(inputSessionName);
                         setInputSessionName("");
                         setSessionOpen(!sessionOpen);
@@ -435,7 +425,13 @@ function Timer() {
                       <HiX
                         onClick={(e) => {
                           e.stopPropagation();
-                          deleteSession(session);
+                          deleteSession(
+                            session,
+                            currentUser,
+                            sessionName,
+                            setSessionName,
+                            setSessionTimes
+                          );
                         }}
                         className="flex hover:bg-slate-100 cursor-pointer rounded-md p-1 text-lg"
                       />
@@ -445,7 +441,7 @@ function Timer() {
               )}
             </AnimatePresence>
           </motion.div>
-          <h2>Stats: {sessionStats.single}</h2>
+          <h2>Stats: {sessionStats && sessionStats.single.time}</h2>
           <h2></h2>
         </div>
 

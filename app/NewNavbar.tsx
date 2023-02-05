@@ -19,8 +19,11 @@ function NewNavbar() {
   const router = useRouter();
   const [profileMenu, setProfileMenu] = useState(false);
   const profileMenuRef = useRef(null);
+  const profileMenuButtonRef = useRef(null);
 
-  clickOutside([profileMenuRef], () => setProfileMenu(false));
+  clickOutside([profileMenuRef, profileMenuButtonRef], () =>
+    setProfileMenu(false)
+  );
 
   return (
     <nav className="flex w-full max-w-screen h-14 bg-transparent shadow-xl text-neutral-100 text-center items-center justify-start px-2">
@@ -42,14 +45,14 @@ function NewNavbar() {
 
         {currentUser ? (
           <div className="flex ml-auto cursor-pointer text-center items-center relative">
-            <CgProfile
-              className="w-auto h-8"
-              onClick={() => {
-                if (!profileMenu) {
-                  setProfileMenu(true);
-                }
-              }}
-            />
+            <div ref={profileMenuButtonRef}>
+              <CgProfile
+                className="w-auto h-8"
+                onClick={() => {
+                  setProfileMenu(!profileMenu);
+                }}
+              />
+            </div>
             {profileMenu && (
               <div
                 className="absolute right-0 top-12 w-56 divide-y divide-gray-100 rounded-md bg-neutral-100 shadow-lg origin-top-right p-2"
