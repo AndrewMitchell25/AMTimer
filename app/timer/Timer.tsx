@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Time from "./Time";
-import { timerDelay, formatTime } from "../../constants";
+import { timerDelay, formatTime } from "../../constants/formatTime";
 import { useAuth } from "../../Contexts/AuthContext";
 import {
   addDoc,
@@ -29,6 +29,7 @@ import clickOutside from "../../constants/clickOutside";
 import drawScramble from "../../constants/drawScramble";
 import addSession from "../../constants/addSession";
 import deleteSession from "../../constants/deleteSession";
+import Graph from "./Graph";
 
 function Timer() {
   const [time, setTime] = useState(0);
@@ -368,7 +369,7 @@ function Timer() {
   return (
     <div className="grid grid-cols-4 grid-rows-4 w-full h-[80vh]">
       <div className=" row-span-4 col-span-2 md:col-span-1 bg-slate-400 p-3 text-center">
-        <div className="flex justify-center relative h-auto w-full">
+        <div className="flex flex-col justify-center relative h-auto w-full">
           <h2 className="flex p-1">Session: </h2>
           <motion.div
             whileTap={{ scale: 0.9 }}
@@ -442,7 +443,7 @@ function Timer() {
             </AnimatePresence>
           </motion.div>
           <h2>Stats: {sessionStats && sessionStats.single.time}</h2>
-          <h2></h2>
+          <Graph times={sessionTimes} />
         </div>
 
         <div>
