@@ -25,7 +25,7 @@ function Times({ sessionTimes, sessionName }: Props) {
   const [toggleModal, setToggleModal] = useState(false);
 
   return (
-    <div className="flex items-center justify-start flex-col overflow-auto">
+    <div className="flex items-center justify-start flex-col overflow-y-auto h-72 border">
       {sessionTimes.map((time, i) => (
         <motion.div className="flex" key={i}>
           <div className="p-1">{sessionTimes.length - i}</div>
