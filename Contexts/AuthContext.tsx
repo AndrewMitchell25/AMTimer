@@ -23,10 +23,6 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [currentUserData, setCurrentUserData] = useState<UserData | null>(null);
 
-  function signOut() {
-    return auth.signOut();
-  }
-
   function resetPassword(email: string) {
     return sendPasswordResetEmail(auth, email);
   }
@@ -75,7 +71,6 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
   const value = {
     currentUser,
     currentUserData,
-    signOut,
     resetPassword,
     updateUserEmail,
     updateUserPassword,

@@ -9,8 +9,7 @@ import { CgProfile } from "react-icons/cg";
 import { useRouter } from "next/navigation";
 
 function Navbar() {
-  const { currentUser, currentUserData, signOut } =
-    useAuth() as AuthContextType;
+  const { currentUser, currentUserData } = useAuth() as AuthContextType;
   const [toggle, setToggle] = useState(false);
   const [profile, setProfile] = useState(false);
   const router = useRouter();

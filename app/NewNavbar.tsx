@@ -11,6 +11,7 @@ import NavLink from "./NavLink";
 import { usePathname, useRouter } from "next/navigation";
 import clickOutside from "../constants/clickOutside";
 import { profile } from "console";
+import { auth } from "../Firebase/firebase";
 
 function NewNavbar() {
   const { currentUser, currentUserData } = useAuth() as AuthContextType;
@@ -21,9 +22,13 @@ function NewNavbar() {
   const profileMenuRef = useRef(null);
   const profileMenuButtonRef = useRef(null);
 
-  clickOutside([profileMenuRef, profileMenuButtonRef], () =>
-    setProfileMenu(false)
-  );
+  //clickOutside([profileMenuRef, profileMenuButtonRef], () =>
+  //  setProfileMenu(false)
+  //);
+
+  function signOut() {
+    return auth.signOut();
+  }
 
   return (
     <nav className="flex w-full max-w-screen h-14 bg-transparent shadow-xl text-neutral-100 text-center items-center justify-start px-2">
@@ -72,7 +77,7 @@ function NewNavbar() {
                   <h2
                     onClick={() => {
                       setProfileMenu(false);
-                      //signOut();
+                      signOut();
                       router.push("/");
                     }}
                     className="text-blue-400 cursor-pointer flex hover:bg-slate-300 w-full rounded-sm p-1"

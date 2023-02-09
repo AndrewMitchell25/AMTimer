@@ -29,7 +29,8 @@ import clickOutside from "../../constants/clickOutside";
 import drawScramble from "../../constants/drawScramble";
 import addSession from "../../constants/addSession";
 import deleteSession from "../../constants/deleteSession";
-import Graph from "./Graph";
+import Graph from "../Graph";
+import getSessions from "../../constants/getSessions";
 
 function Timer() {
   const [time, setTime] = useState(0);
@@ -181,26 +182,13 @@ function Timer() {
   };
 
   //Add snapshot listener for session names for the current user and add them to state, calls when user changes
-  useEffect(() => {
-    if (currentUser) {
-      const q = query(collection(db, `users/${currentUser.uid}/sessions`));
-
-      const unsubscribe = onSnapshot(q, (querySnapshot) => {
-        let s: string[] = [];
-        querySnapshot.forEach((doc) => {
-          s.push(doc.id);
-        });
-        setSessionNames([...sessionNames, ...s]);
-      });
-
-      return unsubscribe;
-      //If the user logs out reset the state to default
-    } else {
-      setSessionNames([]);
-      setSessionName("Select a Session");
-      setSessionTimes([]);
-    }
-  }, [currentUser]);
+  getSessions(
+    currentUser,
+    sessionNames,
+    setSessionNames,
+    setSessionName,
+    setSessionTimes
+  );
 
   //Add snapshot listener to get session stats and set the state
   useEffect(() => {
@@ -419,7 +407,7 @@ function Timer() {
                           setSessionOpen(!sessionOpen);
                         }}
                         whileTap={{ scale: 0.9 }}
-                        className="hover:bg-slate-100 p-1 w-auto"
+                        className="hover:bg-slate-200 p-1 w-auto"
                       >
                         {session}
                       </motion.div>

@@ -41,14 +41,19 @@ type statTime = {
 type UserData = {
   dateCreated: FieldValue;
   displayName: string;
-  pbs: {};
+  pbs: {
+    single: string;
+    ao5: string;
+    ao12: string;
+    ao50: string;
+    ao100: string;
+  };
   totalSolves: number;
 };
 
 type AuthContextType = {
   currentUser: User | null;
   currentUserData: UserData | null;
-  signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   updateUserEmail: (email: string) => Promise<void> | undefined;
   updateUserPassword: (password: string) => Promise<void> | undefined;

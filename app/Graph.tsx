@@ -9,7 +9,7 @@ import {
   Legend,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
-import unFormatTime from "../../constants/unFormatTime";
+import unFormatTime from "../constants/unFormatTime";
 
 interface Props {
   times: time[];
@@ -50,13 +50,10 @@ function Graph({ times }: Props) {
         max: Math.ceil(Math.max(...timeData) + 1),
       },
     },
+    maintainAspectRatio: false,
   };
 
-  return (
-    <div>
-      <Line data={data} options={options} />
-    </div>
-  );
+  return <Line data={data} options={options} />;
 }
 
 export default Graph;
