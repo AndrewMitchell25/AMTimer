@@ -3,7 +3,7 @@ import { SiFirebase, SiNextdotjs, SiReact, SiTypescript } from "react-icons/si";
 
 function AboutPage() {
   return (
-    <div className="text-neutral-100">
+    <div className="text-zinc-800 dark:text-neutral-100">
       <h1>About AMTimer</h1>
       <p>
         Hi, my name is Andrew, and I am an undergraduate student at the

@@ -9,9 +9,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html>
+    <html className="">
       <head />
-      <body className="bg-neutral-900 font-poppins overflow-auto">
+      <body className="bg-neutral-100 dark:bg-zinc-800 font-poppins overflow-auto">
         <AuthProvider>
           <NewNavbar />
           {children}

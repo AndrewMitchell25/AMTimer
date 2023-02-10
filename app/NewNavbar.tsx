@@ -31,7 +31,7 @@ function NewNavbar() {
   }
 
   return (
-    <nav className="flex w-full max-w-screen h-14 bg-transparent shadow-xl text-neutral-100 text-center items-center justify-start px-2">
+    <nav className="flex w-full max-w-screen h-14 bg-transparent shadow-md dark:shadow-xl text-zinc-800 dark:text-neutral-100 text-center items-center justify-start px-2">
       <div className="w-10">
         <Image src={logo} alt="logo" />
       </div>

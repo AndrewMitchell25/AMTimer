@@ -11,8 +11,8 @@ function NavLink({ text, active }: Props) {
     <Link
       href={text == "Home" ? "/" : `/${text.toLowerCase()}`}
       className={
-        (active ? "text-red-600 bg-neutral-800" : "") +
-        " text-lg hover:bg-neutral-700 h-full text-center items-center flex px-4"
+        (active ? "text-red-600 bg-neutral-200 dark:bg-zinc-900" : "") +
+        " text-lg dark:hover:bg-neutral-700 hover:bg-neutral-300 h-full text-center items-center flex px-4"
       }
     >
       {text}

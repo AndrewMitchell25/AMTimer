@@ -431,7 +431,9 @@ function Timer() {
             </AnimatePresence>
           </motion.div>
           <h2>Stats: {sessionStats && sessionStats.single.time}</h2>
-          <Graph times={sessionTimes} />
+          <div className="flex h-52">
+            <Graph times={sessionTimes} />
+          </div>
         </div>
 
         <div>

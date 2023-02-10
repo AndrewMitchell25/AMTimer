@@ -8,8 +8,8 @@ function Homepage() {
   return (
     <>
       <div className="bg-red-600 w-[50vw] md:w-96 absolute h-screen top-0 right-0 -z-20"></div>
-      <div className="flex h-[95vh] w-full text-neutral-100 p-4 flex-col xl:flex-row">
-        <div className="hidden lg:block text-[42rem] text-neutral-100 font-bold absolute -left-32 opacity-5 top-0 h-auto -z-10 select-none">
+      <div className="flex h-[95vh] w-full text-zinc-800 dark:text-neutral-100 p-4 flex-col xl:flex-row">
+        <div className="hidden lg:block text-[42rem] text-zinc-800 dark:text-neutral-100 font-bold absolute -left-32 opacity-5 top-0 h-auto -z-10 select-none">
           AM
         </div>
         <div className="flex items-center text-center xl:text-left xl:items-start flex-col xl:ml-56 xl:mt-28 mt-10 ">
@@ -32,7 +32,7 @@ function Homepage() {
           <div className="flex w-full mt-16 space-x-11 xl:justify-start justify-center">
             <Link
               href="/about"
-              className="text-xl rounded-lg text-center p-2 border-2 border-neutral-100 text-neutral-100 md:border-red-600 md:text-red-600 flex items-center"
+              className="text-xl rounded-lg text-center p-2 border-2 border-neutral-100 text-neutral-100 md:border-red-600 md:text-red-600 flex items-center hover:bg-red-300"
               scroll={false}
             >
               Learn More
@@ -40,7 +40,7 @@ function Homepage() {
             </Link>
             <Link
               href="/signup"
-              className="text-zinc-900 text-xl bg-neutral-100 rounded-lg text-center p-2 border-2"
+              className="text-zinc-900 text-xl bg-neutral-100 rounded-lg text-center p-2 border-2 dark:border-neutral-100 border-zinc-800 hover:bg-neutral-200"
             >
               Sign Up
             </Link>
@@ -51,9 +51,6 @@ function Homepage() {
             <Image src={heroCube} alt="cube" fill={false} />
           </div>
         </div>
-      </div>
-      <div id="learn-more" className="h-full min-h-screen text-neutral-100">
-        Learn More Here...Eventually
       </div>
     </>
   );
