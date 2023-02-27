@@ -12,6 +12,7 @@ import { usePathname, useRouter } from "next/navigation";
 import clickOutside from "../constants/clickOutside";
 import { profile } from "console";
 import { auth } from "../Firebase/firebase";
+import { AnimatePresence, motion } from "framer-motion";
 
 function NewNavbar() {
   const { currentUser, currentUserData } = useAuth() as AuthContextType;
@@ -49,8 +50,8 @@ function NewNavbar() {
         </ul>
 
         {currentUser ? (
-          <div className="flex ml-auto cursor-pointer text-center items-center relative">
-            <div ref={profileMenuButtonRef}>
+          <div className="flex ml-auto text-center items-center relative">
+            <div ref={profileMenuButtonRef} className="cursor-pointer">
               <CgProfile
                 className="w-auto h-8"
                 onClick={() => {
@@ -58,35 +59,43 @@ function NewNavbar() {
                 }}
               />
             </div>
-            {profileMenu && (
-              <div
-                className="absolute right-0 top-12 w-56 divide-y divide-gray-100 rounded-md bg-neutral-100 shadow-lg origin-top-right p-2"
-                ref={profileMenuRef}
-              >
-                <ul className="text-neutral-900">
-                  {currentUserData && (
-                    <h2 className="flex">{currentUserData.displayName}</h2>
-                  )}
-                  <Link
-                    href="/profile"
-                    className="flex hover:bg-neutral-300 w-full rounded-sm p-2"
-                    onClick={() => setProfileMenu(false)}
-                  >
-                    Profile
-                  </Link>
-                  <h2
-                    onClick={() => {
-                      setProfileMenu(false);
-                      signOut();
-                      router.push("/");
-                    }}
-                    className="text-blue-400 cursor-pointer flex hover:bg-slate-300 w-full rounded-sm p-1"
-                  >
-                    Sign Out
-                  </h2>
-                </ul>
-              </div>
-            )}
+            <AnimatePresence>
+              {profileMenu && (
+                <motion.div
+                  className="absolute right-0 top-12 w-56 divide-y divide-gray-100 rounded-md bg-neutral-100 shadow-lg origin-top-right p-2"
+                  ref={profileMenuRef}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ ease: "easeOut", duration: 0.2 }}
+                >
+                  <ul className="text-neutral-900">
+                    {currentUserData && (
+                      <h2 className="flex text-lg p-2">
+                        {currentUserData.displayName}
+                      </h2>
+                    )}
+                    <Link
+                      href="/profile"
+                      className="flex hover:bg-neutral-300 w-full rounded-sm p-2"
+                      onClick={() => setProfileMenu(false)}
+                    >
+                      Profile
+                    </Link>
+                    <h2
+                      onClick={() => {
+                        setProfileMenu(false);
+                        signOut();
+                        router.push("/");
+                      }}
+                      className="text-blue-400 cursor-pointer flex hover:bg-slate-300 w-full rounded-sm p-1"
+                    >
+                      Sign Out
+                    </h2>
+                  </ul>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         ) : (
           <Link

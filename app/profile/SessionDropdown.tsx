@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { Dispatch, MutableRefObject, SetStateAction } from "react";
 import { RiArrowDropDownLine } from "react-icons/ri";
 
@@ -35,22 +35,30 @@ function SessionDropdown({
           />
         </motion.div>
       </div>
-      {sessionDropdown && (
-        <div className="bg-neutral-100 text-neutral-900 w-full absolute rounded-md mt-1 p-2 flex flex-col shadow-md z-30">
-          {sessionNames.map((session) => (
-            <div
-              className="cursor-pointer hover:bg-slate-200 p-1 rounded-md"
-              key={session}
-              onClick={() => {
-                setSessionName(session);
-                setSessionDropdown(!sessionDropdown);
-              }}
-            >
-              {session}
-            </div>
-          ))}
-        </div>
-      )}
+      <AnimatePresence>
+        {sessionDropdown && (
+          <motion.div
+            className="bg-neutral-100 text-neutral-900 w-full absolute rounded-md mt-1 p-2 flex flex-col shadow-md z-30"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            transition={{ ease: "easeOut", duration: 0.2 }}
+          >
+            {sessionNames.map((session) => (
+              <div
+                className="cursor-pointer hover:bg-slate-200 p-1 rounded-md"
+                key={session}
+                onClick={() => {
+                  setSessionName(session);
+                  setSessionDropdown(!sessionDropdown);
+                }}
+              >
+                {session}
+              </div>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

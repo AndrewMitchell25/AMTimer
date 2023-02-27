@@ -119,7 +119,7 @@ function SignUpPage() {
   }
 
   return (
-    <div className="flex items-center flex-col text-neutral-100">
+    <div className="flex items-center flex-col text-zinc-800 dark:text-neutral-50">
       <h2 className="mt-10 text-4xl font-semibold">Sign Up</h2>
       {error && <p className="text-red-500">{error}</p>}
       <form onSubmit={handleSubmit} className="flex flex-col mt-8 w-64 text-md">

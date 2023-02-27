@@ -8,8 +8,6 @@ import {
   collection,
   deleteDoc,
   doc,
-  getDoc,
-  getDocs,
   increment,
   onSnapshot,
   orderBy,
@@ -46,6 +44,9 @@ function Timer() {
   const [sessionNames, setSessionNames] = useState<string[]>([]);
   const [inputSessionName, setInputSessionName] = useState("");
   const [sessionTimes, setSessionTimes] = useState<time[]>([]);
+  const [sessionAverages, setSessionAverages] = useState<sessionAverages>(
+    {} as sessionAverages
+  );
   const [scramble, setScramble] = useState("");
   const [cube, setCube] = useState<Cube>(new Cube());
   const [sessionStats, setSessionStats] = useState<sessionStats>({
@@ -149,12 +150,12 @@ function Timer() {
   //Continuously check how long the space button has been pressed and assign color
   useEffect(() => {
     if (downTime >= timerDelay) {
-      setTimeStyle("text-green-600");
+      setTimeStyle("rgb(22 163 74)");
       setTime(0);
       setReleaseTimer(true);
       //TODO: Clear UI?
     } else if (downTime > 50) {
-      setTimeStyle("text-red-600");
+      setTimeStyle("rgb(220 38 38)");
     }
   }, [downTime]);
 
@@ -199,12 +200,18 @@ function Timer() {
           if (doc.exists()) {
             setSessionStats({
               timestamp: doc.data().timestamp,
-              single: doc.data().single,
-              ao5: doc.data().ao5,
-              ao12: doc.data().ao12,
-              ao50: doc.data().ao50,
-              ao100: doc.data().ao100,
+              single: doc.data().best.single,
+              ao5: doc.data().best.ao5,
+              ao12: doc.data().best.ao12,
+              ao50: doc.data().best.ao50,
+              ao100: doc.data().best.ao100,
               cube: doc.data().cube,
+            });
+            setSessionAverages({
+              ao5: doc.data().average.ao5,
+              ao12: doc.data().average.ao12,
+              ao50: doc.data().average.ao50,
+              ao100: doc.data().average.ao100,
             });
           } else {
             setSessionStats({
@@ -248,12 +255,12 @@ function Timer() {
           time: "99999999",
           timestamp: "",
           scramble: "",
-          ao5: "",
-          ao12: "",
-          ao50: "",
-          ao100: "",
           plus2: false,
           dnf: false,
+        };
+        let currentao5: statAverage = {
+          average: "",
+          times: [],
         };
         querySnapshot.forEach((doc) => {
           let newTime: time = {
@@ -261,10 +268,6 @@ function Timer() {
             time: doc.data().time,
             timestamp: doc.data().timestamp,
             scramble: doc.data().scramble,
-            ao5: doc.data().ao5,
-            ao12: doc.data().ao12,
-            ao50: doc.data().ao50,
-            ao100: doc.data().ao100,
             plus2: doc.data().plus2,
             dnf: doc.data().dnf,
           };
@@ -298,39 +301,11 @@ function Timer() {
           time: time,
           timestamp: sT,
           scramble: scramble,
-          ao5: "",
-          ao12: "",
-          ao50: "",
-          ao100: "",
           plus2: false,
           dnf: false,
         }
       );
-      /*
-      //Check to see if it's session PB and update
-      const sessionRef = doc(
-        db,
-        `users/${currentUser.uid}/sessions/${sessionName}`
-      );
-      const sessionSnap = await getDoc(sessionRef);
-      if (
-        sessionSnap.exists() &&
-        (time < sessionSnap.data().single.time ||
-          sessionSnap.data().single.time === "")
-      ) {
-        await updateDoc(sessionRef, {
-          single: {
-            id: docRef.id,
-            time: time,
-            timestamp: sT,
-            scramble: scramble,
-            plus2: false,
-            dnf: false,
-          },
-        });
-      }
 
-      */
       //Increment all time app solves
       const dataRef = updateDoc(doc(db, "appData/data"), {
         totalSolves: increment(1),
@@ -355,98 +330,101 @@ function Timer() {
   drawScramble(scramble, cube, setCube);
 
   return (
-    <div className="grid grid-cols-4 grid-rows-4 w-full h-[80vh]">
-      <div className=" row-span-4 col-span-2 md:col-span-1 bg-slate-400 p-3 text-center">
-        <div className="flex flex-col justify-center relative h-auto w-full">
-          <h2 className="flex p-1">Session: </h2>
-          <motion.div
-            whileTap={{ scale: 0.9 }}
-            onClick={() => setSessionOpen(!sessionOpen)}
-            className="cursor-pointer p-1 relative select-none h-auto"
-          >
-            {sessionName}
+    <>
+      <div className="bg-blue-600 w-[50vw] md:w-80 absolute h-screen top-0 right-0 -z-20"></div>
+      <div className="grid grid-cols-4 grid-rows-4 w-full h-[80vh]">
+        <div className=" row-span-4 col-span-2 md:col-span-1 p-3 text-center">
+          <div className="flex flex-col justify-center relative h-auto w-full">
+            <h2 className="flex p-1">Session: </h2>
+            <motion.div
+              whileTap={{ scale: 0.9 }}
+              onClick={() => setSessionOpen(!sessionOpen)}
+              className="cursor-pointer p-1 relative select-none h-auto"
+            >
+              {sessionName}
 
-            <AnimatePresence>
-              {sessionOpen && (
-                <motion.div
-                  className="absolute bg-white w-[200px] flex flex-col items-start p-1 top-7 overflow-auto"
-                  onClick={(e) => e.stopPropagation()}
-                  onPointerDownCapture={(e) => e.stopPropagation()}
-                  ref={sessionListRef}
-                >
-                  <motion.button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (inputSessionName.length > 0) {
-                        addSession(inputSessionName, currentUser);
-                        setSessionName(inputSessionName);
-                        setInputSessionName("");
-                        setSessionOpen(!sessionOpen);
-                      }
-                    }}
-                    whileTap={{ scale: 0.9 }}
-                  >
-                    New
-                  </motion.button>
-                  <input
-                    className="w-full border rounded-sm p-1"
+              <AnimatePresence>
+                {sessionOpen && (
+                  <motion.div
+                    className="absolute bg-white w-[200px] flex flex-col items-start p-1 top-7 overflow-auto"
                     onClick={(e) => e.stopPropagation()}
-                    value={inputSessionName}
-                    onChange={(e) => setInputSessionName(e.target.value)}
-                  ></input>
-                  <span className="w-full p-[1px] my-1 bg-slate-200"></span>
-                  {sessionNames.map((session) => (
-                    <motion.div
-                      className="w-full p-1 flex items-center justify-items-start"
-                      key={session}
-                    >
-                      <motion.div
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSessionName(session);
+                    onPointerDownCapture={(e) => e.stopPropagation()}
+                    ref={sessionListRef}
+                  >
+                    <motion.button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (inputSessionName.length > 0) {
+                          addSession(inputSessionName, currentUser);
+                          setSessionName(inputSessionName);
+                          setInputSessionName("");
                           setSessionOpen(!sessionOpen);
-                        }}
-                        whileTap={{ scale: 0.9 }}
-                        className="hover:bg-slate-200 p-1 w-auto"
+                        }
+                      }}
+                      whileTap={{ scale: 0.9 }}
+                    >
+                      New
+                    </motion.button>
+                    <input
+                      className="w-full border rounded-sm p-1"
+                      onClick={(e) => e.stopPropagation()}
+                      value={inputSessionName}
+                      onChange={(e) => setInputSessionName(e.target.value)}
+                    ></input>
+                    <span className="w-full p-[1px] my-1 bg-slate-200"></span>
+                    {sessionNames.map((session) => (
+                      <motion.div
+                        className="w-full p-1 flex items-center justify-items-start"
+                        key={session}
                       >
-                        {session}
+                        <motion.div
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSessionName(session);
+                            setSessionOpen(!sessionOpen);
+                          }}
+                          whileTap={{ scale: 0.9 }}
+                          className="hover:bg-slate-200 p-1 w-auto"
+                        >
+                          {session}
+                        </motion.div>
+                        <HiX
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteSession(
+                              session,
+                              currentUser,
+                              sessionName,
+                              setSessionName,
+                              setSessionTimes
+                            );
+                          }}
+                          className="flex hover:bg-slate-100 cursor-pointer rounded-md p-1 text-lg"
+                        />
                       </motion.div>
-                      <HiX
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          deleteSession(
-                            session,
-                            currentUser,
-                            sessionName,
-                            setSessionName,
-                            setSessionTimes
-                          );
-                        }}
-                        className="flex hover:bg-slate-100 cursor-pointer rounded-md p-1 text-lg"
-                      />
-                    </motion.div>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.div>
-          <h2>Stats: {sessionStats && sessionStats.single.time}</h2>
-          <div className="flex h-52">
-            <Graph times={sessionTimes} />
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+            <h2>Stats: {sessionStats && sessionStats.single.time}</h2>
+            <div className="flex h-52">
+              <Graph times={sessionTimes} />
+            </div>
+          </div>
+
+          <div>
+            <Times sessionTimes={sessionTimes} sessionName={sessionName} />
           </div>
         </div>
-
-        <div>
-          <Times sessionTimes={sessionTimes} sessionName={sessionName} />
+        <div className="grid col-span-2 md:col-span-3 text-center">
+          <Scramble scramble={scramble} />
+        </div>
+        <div className="grid col-span-2 md:col-span-3 row-span-3 text-center">
+          <Time time={formatTime(time)} style={timeStyle} />
         </div>
       </div>
-      <div className="grid col-span-2 md:col-span-3 text-center">
-        <Scramble scramble={scramble} />
-      </div>
-      <div className="grid col-span-2 md:col-span-3 row-span-3 text-center">
-        <Time time={formatTime(time)} style={timeStyle} />
-      </div>
-    </div>
+    </>
   );
 }
 

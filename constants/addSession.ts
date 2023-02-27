@@ -23,18 +23,26 @@ async function addSession(session: string, currentUser: User) {
       doc(db, `users/${currentUser.uid}/sessions`, `${session}`),
       {
         timestamp: serverTimestamp(),
-        single: {
-          id: "",
-          time: "",
-          timestamp: "",
-          scramble: "",
-          plus2: false,
-          dnf: false,
+        best: {
+          single: {
+            id: "",
+            time: "",
+            timestamp: "",
+            scramble: "",
+            plus2: false,
+            dnf: false,
+          },
+          ao5: [],
+          ao12: [],
+          ao50: [],
+          ao100: [],
         },
-        ao5: [],
-        ao12: [],
-        ao50: [],
-        ao100: [],
+        average: {
+          ao5: [],
+          ao12: [],
+          ao50: [],
+          ao100: [],
+        },
         cube: "",
       }
     );

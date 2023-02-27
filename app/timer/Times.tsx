@@ -15,10 +15,6 @@ function Times({ sessionTimes, sessionName }: Props) {
     time: "",
     timestamp: "",
     scramble: "",
-    ao5: "",
-    ao12: "",
-    ao50: "",
-    ao100: "",
     plus2: false,
     dnf: false,
   });

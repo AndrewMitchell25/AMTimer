@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import Cube from "./timer/CubeState";
 import { BsArrowRight } from "react-icons/bs";
@@ -7,9 +9,9 @@ import Image from "next/image";
 function Homepage() {
   return (
     <>
-      <div className="bg-red-600 w-[50vw] md:w-96 absolute h-screen top-0 right-0 -z-20"></div>
-      <div className="flex h-[95vh] w-full text-zinc-800 dark:text-neutral-100 p-4 flex-col xl:flex-row">
-        <div className="hidden lg:block text-[42rem] text-zinc-800 dark:text-neutral-100 font-bold absolute -left-32 opacity-5 top-0 h-auto -z-10 select-none">
+      <div className="bg-red-600 w-[50vw] md:w-80 absolute h-screen top-0 right-0 -z-20"></div>
+      <div className="flex h-[95vh] w-full text-zinc-800 dark:text-neutral-50 p-4 flex-col xl:flex-row">
+        <div className="hidden lg:block text-[42rem] text-zinc-800 dark:text-neutral-50 font-bold absolute -left-32 opacity-5 top-0 h-auto -z-10 select-none">
           AM
         </div>
         <div className="flex items-center text-center xl:text-left xl:items-start flex-col xl:ml-56 xl:mt-28 mt-10 ">
