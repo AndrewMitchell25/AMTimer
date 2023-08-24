@@ -17,7 +17,7 @@ type time = {
 
 type statAverage = {
   average: string;
-  times: string[];
+  times: time[];
 };
 
 type sessionAverages = {

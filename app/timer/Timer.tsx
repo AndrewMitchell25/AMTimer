@@ -200,18 +200,12 @@ function Timer() {
           if (doc.exists()) {
             setSessionStats({
               timestamp: doc.data().timestamp,
-              single: doc.data().best.single,
-              ao5: doc.data().best.ao5,
-              ao12: doc.data().best.ao12,
-              ao50: doc.data().best.ao50,
-              ao100: doc.data().best.ao100,
+              single: doc.data().single,
+              ao5: doc.data().ao5,
+              ao12: doc.data().ao12,
+              ao50: doc.data().ao50,
+              ao100: doc.data().ao100,
               cube: doc.data().cube,
-            });
-            setSessionAverages({
-              ao5: doc.data().average.ao5,
-              ao12: doc.data().average.ao12,
-              ao50: doc.data().average.ao50,
-              ao100: doc.data().average.ao100,
             });
           } else {
             setSessionStats({
@@ -262,7 +256,7 @@ function Timer() {
           average: "",
           times: [],
         };
-        querySnapshot.forEach((doc) => {
+        querySnapshot.forEach(async (doc) => {
           let newTime: time = {
             id: doc.id,
             time: doc.data().time,
@@ -275,6 +269,18 @@ function Timer() {
           if (newTime.time < minTime.time) {
             minTime = newTime;
           }
+          if (currentao5.times.length == 5) {
+            //make an ao5 doc to push to database
+            await setDoc(
+              doc(
+                db,
+                `users/${currentUser.uid}/sessions/${sessionName}/averages/ao5`
+              ),
+              {}
+            );
+            currentao5.times = currentao5.times.slice(1);
+          }
+          currentao5.times.push(newTime);
         });
         setSessionTimes(t);
         //TODO: update sessionStats in database not just state
@@ -407,9 +413,14 @@ function Timer() {
                 )}
               </AnimatePresence>
             </motion.div>
-            <h2>Stats: {sessionStats && sessionStats.single.time}</h2>
+            <h2>
+              Stats:{" "}
+              {sessionStats.single && sessionStats.single.time != "99999999"
+                ? sessionStats.single.time
+                : ""}
+            </h2>
             <div className="flex h-52">
-              <Graph times={sessionTimes} />
+              <Graph times={sessionTimes} averages={[]} />
             </div>
           </div>
 
